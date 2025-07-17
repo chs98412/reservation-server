@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.time.LocalDate
 
 
 @ExtendWith(RestDocumentationExtension::class)
@@ -65,6 +66,38 @@ class ReservationControllerTest {
                             )
                             .responseFields(
                                 fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("대기 번호"),
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
+
+    @Test
+    fun `예약 가능 좌석 조회 API`() {
+        mockMvc.perform(
+            get("/reservation/available-seats?date={date}", LocalDate.now())
+                .header("X-ACCOUNT-ID", "account123")
+                .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
+        )
+            .andExpect(status().isOk)
+            .andDo(
+                document(
+                    "get-available-seats",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("예약 가능 좌석 조회")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더"),
+                                headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
+                            )
+                            .queryParameters(
+                                parameterWithName("date").description("검색 일자")
+                            )
+                            .responseFields(
+                                fieldWithPath("availableSeats").type(JsonFieldType.ARRAY).description("예약 가능 좌석 목록"),
                             )
                             .build()
                     )

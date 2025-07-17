@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.controller
 
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableDatesResponse
+import kr.hhplus.be.server.controller.model.response.ReservationAvailableSeatListResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/reservation")
@@ -15,5 +17,15 @@ class ReservationController {
         @RequestParam("concert-id") concertId: String,
     ): ResponseEntity<ReservationAvailableDatesResponse> {
         return ResponseEntity.ok(ReservationAvailableDatesResponse.mockResponse)
+    }
+
+
+    @GetMapping("/available-seats")
+    fun getAvailableSeats(
+        @RequestHeader("X-ACCOUNT-ID") accountId: String,
+        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
+        @RequestParam("date") date: LocalDate,
+    ): ResponseEntity<ReservationAvailableSeatListResponse> {
+        return ResponseEntity.ok(ReservationAvailableSeatListResponse.mockResponse)
     }
 }
