@@ -16,6 +16,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors.preproces
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -63,6 +64,36 @@ class QueueControllerTest {
                                 fieldWithPath("estimatedWaitSeconds").type(JsonFieldType.NUMBER)
                                     .description("예상 대기 시간"),
                                 fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성일시"),
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
+
+    @Test
+    fun `대기 번호 조회 API`() {
+        mockMvc.perform(
+            get("/queue/status")
+                .header("X-ACCOUNT-ID", "account123")
+        )
+            .andExpect(status().isOk)
+            .andDo(
+                document(
+                    "get-queue-status",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("대기열 대기번호 조회")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더")
+                            )
+                            .responseFields(
+                                fieldWithPath("queueNumber").type(JsonFieldType.NUMBER).description("대기 번호"),
+                                fieldWithPath("estimatedWaitSeconds").type(JsonFieldType.NUMBER)
+                                    .description("예상 대기 시간"),
+                                fieldWithPath("status").type(JsonFieldType.STRING).description("대기 상태"),
                             )
                             .build()
                     )
