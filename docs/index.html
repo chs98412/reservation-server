@@ -844,17 +844,120 @@ ul.nav-tabs {
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-    defs["point-id-326533501"] = {
-  "required" : [ "id", "point" ],
+    defs["point921688622"] = {
+  "required" : [ "balance" ],
   "type" : "object",
   "properties" : {
-    "id" : {
+    "balance" : {
       "type" : "number",
-      "description" : "사용자 ID"
+      "description" : "현재 잔액"
+    }
+  }
+};
+    defs["point-charge2139365711"] = {
+  "required" : [ "amount" ],
+  "type" : "object",
+  "properties" : {
+    "amount" : {
+      "type" : "number",
+      "description" : "충전 금액"
+    }
+  }
+};
+    defs["point-payment-1753207326"] = {
+  "required" : [ "reservationId" ],
+  "type" : "object",
+  "properties" : {
+    "reservationId" : {
+      "type" : "number",
+      "description" : "예약 번호"
+    }
+  }
+};
+    defs["queue-status390315021"] = {
+  "required" : [ "estimatedWaitSeconds", "queueNumber", "status" ],
+  "type" : "object",
+  "properties" : {
+    "estimatedWaitSeconds" : {
+      "type" : "number",
+      "description" : "예상 대기 시간"
     },
-    "point" : {
+    "queueNumber" : {
       "type" : "number",
-      "description" : "보유 포인트"
+      "description" : "대기 번호"
+    },
+    "status" : {
+      "type" : "string",
+      "description" : "대기 상태"
+    }
+  }
+};
+    defs["queue-token-1001903413"] = {
+  "required" : [ "createdAt", "estimatedWaitSeconds", "queueNumber", "tokenId" ],
+  "type" : "object",
+  "properties" : {
+    "createdAt" : {
+      "type" : "string",
+      "description" : "생성일시"
+    },
+    "estimatedWaitSeconds" : {
+      "type" : "number",
+      "description" : "예상 대기 시간"
+    },
+    "tokenId" : {
+      "type" : "string",
+      "description" : "토큰 ID"
+    },
+    "queueNumber" : {
+      "type" : "number",
+      "description" : "대기 번호"
+    }
+  }
+};
+    defs["reservation-171495653"] = {
+  "required" : [ "seatId" ],
+  "type" : "object",
+  "properties" : {
+    "seatId" : {
+      "type" : "number",
+      "description" : "예약할 좌석 번호"
+    }
+  }
+};
+    defs["reservation-available-dates947196616"] = {
+  "required" : [ "availableDates" ],
+  "type" : "object",
+  "properties" : {
+    "availableDates" : {
+      "type" : "array",
+      "description" : "예약 가능 날짜 목록",
+      "items" : {
+        "$ref" : "#/components/schemas/reservation_available_dates947196616_availableDates_inner"
+      }
+    }
+  }
+};
+    defs["reservation_available_dates947196616_availableDates_inner"] = {
+  "oneOf" : [ {
+    "type" : "object"
+  }, {
+    "type" : "boolean"
+  }, {
+    "type" : "string"
+  }, {
+    "type" : "number"
+  } ]
+};
+    defs["reservation-available-seats-1320903909"] = {
+  "required" : [ "availableSeats" ],
+  "type" : "object",
+  "properties" : {
+    "availableSeats" : {
+      "type" : "array",
+      "description" : "예약 가능 좌석 목록",
+      "items" : {
+        "$ref" : "#/components/schemas/reservation_available_dates947196616_availableDates_inner"
+      }
     }
   }
 };
@@ -877,8 +980,31 @@ ul.nav-tabs {
             <li class="nav-fixed nav-header active" data-group="_"><a href="#api-_">API Summary</a></li>
 
                   <li class="nav-header" data-group="Point"><a href="#api-Point">API Methods - Point</a></li>
-                    <li data-group="Point" data-name="getUser" class="">
-                      <a href="#api-Point-getUser">getUser</a>
+                    <li data-group="Point" data-name="chargeBalance" class="">
+                      <a href="#api-Point-chargeBalance">chargeBalance</a>
+                    </li>
+                    <li data-group="Point" data-name="getBalance" class="">
+                      <a href="#api-Point-getBalance">getBalance</a>
+                    </li>
+                    <li data-group="Point" data-name="processPayment" class="">
+                      <a href="#api-Point-processPayment">processPayment</a>
+                    </li>
+                  <li class="nav-header" data-group="Queue"><a href="#api-Queue">API Methods - Queue</a></li>
+                    <li data-group="Queue" data-name="createQueueToken" class="">
+                      <a href="#api-Queue-createQueueToken">createQueueToken</a>
+                    </li>
+                    <li data-group="Queue" data-name="getQueueStatus" class="">
+                      <a href="#api-Queue-getQueueStatus">getQueueStatus</a>
+                    </li>
+                  <li class="nav-header" data-group="Reservation"><a href="#api-Reservation">API Methods - Reservation</a></li>
+                    <li data-group="Reservation" data-name="getAvailableDates" class="">
+                      <a href="#api-Reservation-getAvailableDates">getAvailableDates</a>
+                    </li>
+                    <li data-group="Reservation" data-name="getAvailableSeats" class="">
+                      <a href="#api-Reservation-getAvailableSeats">getAvailableSeats</a>
+                    </li>
+                    <li data-group="Reservation" data-name="reserveSeat" class="">
+                      <a href="#api-Reservation-reserveSeat">reserveSeat</a>
                     </li>
           </ul>
         </nav>
@@ -903,46 +1029,47 @@ ul.nav-tabs {
         <div id="sections">
                 <section id="api-Point">
                   <h1>Point</h1>
-                    <div id="api-Point-getUser">
-                      <article id="api-Point-getUser-0" data-group="User" data-name="getUser" data-version="0">
+                    <div id="api-Point-chargeBalance">
+                      <article id="api-Point-chargeBalance-0" data-group="User" data-name="chargeBalance" data-version="0">
                         <div class="pull-left">
-                          <h1>getUser</h1>
-                          <p>사용자 포인트 조회</p>
+                          <h1>chargeBalance</h1>
+                          <p>잔액 충전 API</p>
                         </div>
                         <div class="pull-right"></div>
                         <div class="clearfix"></div>
                         <p></p>
-                        <p class="marked">사용자 포인트 조회</p>
+                        <p class="marked">잔액 충전 API</p>
                         <p></p>
                         <br />
-                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/point/{id}</span></code></pre>
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/point/charge</span></code></pre>
                         <p>
                           <h3>Usage and SDK Samples</h3>
                         </p>
                         <ul class="nav nav-tabs nav-tabs-examples">
-                          <li class="active"><a href="#examples-Point-getUser-0-curl">Curl</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-java">Java</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-dart">Dart</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-android">Android</a></li>
-                          <!--<li class=""><a href="#examples-Point-getUser-0-groovy">Groovy</a></li>-->
-                          <li class=""><a href="#examples-Point-getUser-0-objc">Obj-C</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-javascript">JavaScript</a></li>
-                          <!--<li class=""><a href="#examples-Point-getUser-0-angular">Angular</a></li>-->
-                          <li class=""><a href="#examples-Point-getUser-0-csharp">C#</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-php">PHP</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-perl">Perl</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-python">Python</a></li>
-                          <li class=""><a href="#examples-Point-getUser-0-rust">Rust</a></li>
+                          <li class="active"><a href="#examples-Point-chargeBalance-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Point-chargeBalance-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Point-chargeBalance-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Point-chargeBalance-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Point-chargeBalance-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Point-chargeBalance-0-rust">Rust</a></li>
                         </ul>
 
                         <div class="tab-content">
-                          <div class="tab-pane active" id="examples-Point-getUser-0-curl">
-                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
- -H "Accept: application/json" \
- "http://localhost/point/{id}"
+                          <div class="tab-pane active" id="examples-Point-chargeBalance-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Content-Type: application/json" \
+ "http://localhost/point/charge" \
+ -d ''
 </code></pre>
                           </div>
-                          <div class="tab-pane" id="examples-Point-getUser-0-java">
+                          <div class="tab-pane" id="examples-Point-chargeBalance-0-java">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
 import org.openapitools.client.auth.*;
 import org.openapitools.client.model.*;
@@ -956,13 +1083,13 @@ public class PointApiExample {
 
         // Create an instance of the API class
         PointApi apiInstance = new PointApi();
-        String id = id_example; // String | 사용자 ID
+        String xACCOUNTID = account123; // String | 사용자 식별 ID
+        PointCharge2139365711 pointCharge2139365711 = {"amount":10000}; // PointCharge2139365711 | 
 
         try {
-            point-id-326533501 result = apiInstance.getUser(id);
-            System.out.println(result);
+            apiInstance.chargeBalance(xACCOUNTID, pointCharge2139365711);
         } catch (ApiException e) {
-            System.err.println("Exception when calling PointApi#getUser");
+            System.err.println("Exception when calling PointApi#chargeBalance");
             e.printStackTrace();
         }
     }
@@ -970,58 +1097,58 @@ public class PointApiExample {
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Point-getUser-0-dart">
+                          <div class="tab-pane" id="examples-Point-chargeBalance-0-dart">
                             <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
 
 final api_instance = DefaultApi();
 
-final String id = new String(); // String | 사용자 ID
+final String xACCOUNTID = new String(); // String | 사용자 식별 ID
+final PointCharge2139365711 pointCharge2139365711 = new PointCharge2139365711(); // PointCharge2139365711 | 
 
 try {
-    final result = await api_instance.getUser(id);
+    final result = await api_instance.chargeBalance(xACCOUNTID, pointCharge2139365711);
     print(result);
 } catch (e) {
-    print('Exception when calling DefaultApi->getUser: $e\n');
+    print('Exception when calling DefaultApi->chargeBalance: $e\n');
 }
 
 </code></pre>
                           </div>
 
-                          <div class="tab-pane" id="examples-Point-getUser-0-android">
+                          <div class="tab-pane" id="examples-Point-chargeBalance-0-android">
                             <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.PointApi;
 
 public class PointApiExample {
     public static void main(String[] args) {
         PointApi apiInstance = new PointApi();
-        String id = id_example; // String | 사용자 ID
+        String xACCOUNTID = account123; // String | 사용자 식별 ID
+        PointCharge2139365711 pointCharge2139365711 = {"amount":10000}; // PointCharge2139365711 | 
 
         try {
-            point-id-326533501 result = apiInstance.getUser(id);
-            System.out.println(result);
+            apiInstance.chargeBalance(xACCOUNTID, pointCharge2139365711);
         } catch (ApiException e) {
-            System.err.println("Exception when calling PointApi#getUser");
+            System.err.println("Exception when calling PointApi#chargeBalance");
             e.printStackTrace();
         }
     }
 }</code></pre>
                           </div>
   <!--
-  <div class="tab-pane" id="examples-Point-getUser-0-groovy">
+  <div class="tab-pane" id="examples-Point-chargeBalance-0-groovy">
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
-                            <div class="tab-pane" id="examples-Point-getUser-0-objc">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-objc">
                               <pre class="prettyprint"><code class="language-cpp">
 
 // Create an instance of the API class
 PointApi *apiInstance = [[PointApi alloc] init];
-String *id = id_example; // 사용자 ID (default to null)
+String *xACCOUNTID = account123; // 사용자 식별 ID (default to null)
+PointCharge2139365711 *pointCharge2139365711 = {"amount":10000}; //  (optional)
 
-// 사용자 포인트 조회
-[apiInstance getUserWith:id
-              completionHandler: ^(point-id-326533501 output, NSError* error) {
-    if (output) {
-        NSLog(@"%@", output);
-    }
+// 잔액 충전 API
+[apiInstance chargeBalanceWith:xACCOUNTID
+    pointCharge2139365711:pointCharge2139365711
+              completionHandler: ^(NSError* error) {
     if (error) {
         NSLog(@"Error: %@", error);
     }
@@ -1029,28 +1156,31 @@ String *id = id_example; // 사용자 ID (default to null)
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Point-getUser-0-javascript">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-javascript">
                               <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
 
 // Create an instance of the API class
 var api = new ApiDocumentation.PointApi()
-var id = id_example; // {String} 사용자 ID
+var xACCOUNTID = account123; // {String} 사용자 식별 ID
+var opts = {
+  'pointCharge2139365711': {"amount":10000} // {PointCharge2139365711} 
+};
 
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
   } else {
-    console.log('API called successfully. Returned data: ' + data);
+    console.log('API called successfully.');
   }
 };
-api.getUser(id, callback);
+api.chargeBalance(xACCOUNTID, opts, callback);
 </code></pre>
                             </div>
 
-                            <!--<div class="tab-pane" id="examples-Point-getUser-0-angular">
+                            <!--<div class="tab-pane" id="examples-Point-chargeBalance-0-angular">
               <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
             </div>-->
-                            <div class="tab-pane" id="examples-Point-getUser-0-csharp">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-csharp">
                               <pre class="prettyprint"><code class="language-cs">using System;
 using System.Diagnostics;
 using Org.OpenAPITools.Api;
@@ -1059,21 +1189,21 @@ using Org.OpenAPITools.Model;
 
 namespace Example
 {
-    public class getUserExample
+    public class chargeBalanceExample
     {
         public void main()
         {
 
             // Create an instance of the API class
             var apiInstance = new PointApi();
-            var id = id_example;  // String | 사용자 ID (default to null)
+            var xACCOUNTID = account123;  // String | 사용자 식별 ID (default to null)
+            var pointCharge2139365711 = new PointCharge2139365711(); // PointCharge2139365711 |  (optional) 
 
             try {
-                // 사용자 포인트 조회
-                point-id-326533501 result = apiInstance.getUser(id);
-                Debug.WriteLine(result);
+                // 잔액 충전 API
+                apiInstance.chargeBalance(xACCOUNTID, pointCharge2139365711);
             } catch (Exception e) {
-                Debug.Print("Exception when calling PointApi.getUser: " + e.Message );
+                Debug.Print("Exception when calling PointApi.chargeBalance: " + e.Message );
             }
         }
     }
@@ -1081,42 +1211,42 @@ namespace Example
 </code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Point-getUser-0-php">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-php">
                               <pre class="prettyprint"><code class="language-php"><&#63;php
 require_once(__DIR__ . '/vendor/autoload.php');
 
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\PointApi();
-$id = id_example; // String | 사용자 ID
+$xACCOUNTID = account123; // String | 사용자 식별 ID
+$pointCharge2139365711 = {"amount":10000}; // PointCharge2139365711 | 
 
 try {
-    $result = $api_instance->getUser($id);
-    print_r($result);
+    $api_instance->chargeBalance($xACCOUNTID, $pointCharge2139365711);
 } catch (Exception $e) {
-    echo 'Exception when calling PointApi->getUser: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling PointApi->chargeBalance: ', $e->getMessage(), PHP_EOL;
 }
 ?></code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Point-getUser-0-perl">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-perl">
                               <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
 use WWW::OPenAPIClient::Configuration;
 use WWW::OPenAPIClient::PointApi;
 
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::PointApi->new();
-my $id = id_example; # String | 사용자 ID
+my $xACCOUNTID = account123; # String | 사용자 식별 ID
+my $pointCharge2139365711 = WWW::OPenAPIClient::Object::PointCharge2139365711->new(); # PointCharge2139365711 | 
 
 eval {
-    my $result = $api_instance->getUser(id => $id);
-    print Dumper($result);
+    $api_instance->chargeBalance(xACCOUNTID => $xACCOUNTID, pointCharge2139365711 => $pointCharge2139365711);
 };
 if ($@) {
-    warn "Exception when calling PointApi->getUser: $@\n";
+    warn "Exception when calling PointApi->chargeBalance: $@\n";
 }</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Point-getUser-0-python">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-python">
                               <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
 import time
 import openapi_client
@@ -1125,24 +1255,25 @@ from pprint import pprint
 
 # Create an instance of the API class
 api_instance = openapi_client.PointApi()
-id = id_example # String | 사용자 ID (default to null)
+xACCOUNTID = account123 # String | 사용자 식별 ID (default to null)
+pointCharge2139365711 = {"amount":10000} # PointCharge2139365711 |  (optional)
 
 try:
-    # 사용자 포인트 조회
-    api_response = api_instance.get_user(id)
-    pprint(api_response)
+    # 잔액 충전 API
+    api_instance.charge_balance(xACCOUNTID, pointCharge2139365711=pointCharge2139365711)
 except ApiException as e:
-    print("Exception when calling PointApi->getUser: %s\n" % e)</code></pre>
+    print("Exception when calling PointApi->chargeBalance: %s\n" % e)</code></pre>
                             </div>
 
-                            <div class="tab-pane" id="examples-Point-getUser-0-rust">
+                            <div class="tab-pane" id="examples-Point-chargeBalance-0-rust">
                               <pre class="prettyprint"><code class="language-rust">extern crate PointApi;
 
 pub fn main() {
-    let id = id_example; // String
+    let xACCOUNTID = account123; // String
+    let pointCharge2139365711 = {"amount":10000}; // PointCharge2139365711
 
     let mut context = PointApi::Context::default();
-    let result = client.getUser(id, &context).wait();
+    let result = client.chargeBalance(xACCOUNTID, pointCharge2139365711, &context).wait();
 
     println!("{:?}", result);
 }
@@ -1157,17 +1288,18 @@ pub fn main() {
 
                           <h2>Parameters</h2>
 
-                            <div class="methodsubtabletitle">Path parameters</div>
+
+                            <div class="methodsubtabletitle">Header parameters</div>
                             <table id="methodsubtable">
-                                <tr>
-                                  <th width="150px">Name</th>
-                                  <th>Description</th>
-                                </tr>
-                                  <tr><td style="width:150px;">id*</td>
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
 <td>
 
 
-    <div id="d2e199_getUser_id">
+    <div id="d2e199_chargeBalance_xACCOUNTID">
         <div class="json-schema-view">
             <div class="primitive">
                 <span class="type">
@@ -1175,7 +1307,372 @@ pub fn main() {
                 </span>
 
                     <div class="inner description marked">
-사용자 ID
+사용자 식별 ID
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">pointCharge2139365711 </td>
+<td>
+<p class="marked"></p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/point-charge2139365711"
+      },
+      "examples" : {
+        "charge-balance" : {
+          "value" : "{\"amount\":10000}"
+        }
+      }
+    }
+  }
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_chargeBalance_pointCharge2139365711');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_chargeBalance_pointCharge2139365711"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Point-chargeBalance-title-204"></h3>
+                            <p id="examples-Point-chargeBalance-description-204" class="marked"></p>
+                            <script>
+                              var responsePoint204_description = `204`;
+                              var responsePoint204_description_break = responsePoint204_description.indexOf('\n');
+                              if (responsePoint204_description_break == -1) {
+                                $("#examples-Point-chargeBalance-title-204").text("Status: 204 - " + responsePoint204_description);
+                              } else {
+                                $("#examples-Point-chargeBalance-title-204").text("Status: 204 - " + responsePoint204_description.substring(0, responsePoint204_description_break));
+                                $("#examples-Point-chargeBalance-description-204").html(responsePoint204_description.substring(responsePoint204_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Point-chargeBalance-204" class="nav nav-tabs nav-tabs-examples" >
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Point-chargeBalance-204-wrapper" style='margin-bottom: 10px;'>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Point-getBalance">
+                      <article id="api-Point-getBalance-0" data-group="User" data-name="getBalance" data-version="0">
+                        <div class="pull-left">
+                          <h1>getBalance</h1>
+                          <p>잔액 조회 API</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">잔액 조회 API</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/point</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Point-getBalance-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Point-getBalance-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Point-getBalance-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Point-getBalance-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Point-getBalance-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Point-getBalance-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Point-getBalance-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
+ -H "Accept: application/json" \
+ "http://localhost/point"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Point-getBalance-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.PointApi;
+
+import java.io.File;
+import java.util.*;
+
+public class PointApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        PointApi apiInstance = new PointApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 ID
+
+        try {
+            point921688622 result = apiInstance.getBalance(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PointApi#getBalance");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Point-getBalance-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String xACCOUNTID = new String(); // String | 사용자 식별 ID
+
+try {
+    final result = await api_instance.getBalance(xACCOUNTID);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getBalance: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Point-getBalance-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.PointApi;
+
+public class PointApiExample {
+    public static void main(String[] args) {
+        PointApi apiInstance = new PointApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 ID
+
+        try {
+            point921688622 result = apiInstance.getBalance(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PointApi#getBalance");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Point-getBalance-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Point-getBalance-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+PointApi *apiInstance = [[PointApi alloc] init];
+String *xACCOUNTID = account123; // 사용자 식별 ID (default to null)
+
+// 잔액 조회 API
+[apiInstance getBalanceWith:xACCOUNTID
+              completionHandler: ^(point921688622 output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-getBalance-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.PointApi()
+var xACCOUNTID = account123; // {String} 사용자 식별 ID
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getBalance(xACCOUNTID, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Point-getBalance-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Point-getBalance-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getBalanceExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new PointApi();
+            var xACCOUNTID = account123;  // String | 사용자 식별 ID (default to null)
+
+            try {
+                // 잔액 조회 API
+                point921688622 result = apiInstance.getBalance(xACCOUNTID);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling PointApi.getBalance: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-getBalance-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\PointApi();
+$xACCOUNTID = account123; // String | 사용자 식별 ID
+
+try {
+    $result = $api_instance->getBalance($xACCOUNTID);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PointApi->getBalance: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-getBalance-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::PointApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::PointApi->new();
+my $xACCOUNTID = account123; # String | 사용자 식별 ID
+
+eval {
+    my $result = $api_instance->getBalance(xACCOUNTID => $xACCOUNTID);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling PointApi->getBalance: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-getBalance-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.PointApi()
+xACCOUNTID = account123 # String | 사용자 식별 ID (default to null)
+
+try:
+    # 잔액 조회 API
+    api_response = api_instance.get_balance(xACCOUNTID)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling PointApi->getBalance: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-getBalance-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate PointApi;
+
+pub fn main() {
+    let xACCOUNTID = account123; // String
+
+    let mut context = PointApi::Context::default();
+    let result = client.getBalance(xACCOUNTID, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_getBalance_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 ID
                     </div>
             </div>
                 <div class="inner required">
@@ -1191,25 +1688,24 @@ pub fn main() {
 
 
 
-
                           <h2>Responses</h2>
-                            <h3 id="examples-Point-getUser-title-200"></h3>
-                            <p id="examples-Point-getUser-description-200" class="marked"></p>
+                            <h3 id="examples-Point-getBalance-title-200"></h3>
+                            <p id="examples-Point-getBalance-description-200" class="marked"></p>
                             <script>
                               var responsePoint200_description = `200`;
                               var responsePoint200_description_break = responsePoint200_description.indexOf('\n');
                               if (responsePoint200_description_break == -1) {
-                                $("#examples-Point-getUser-title-200").text("Status: 200 - " + responsePoint200_description);
+                                $("#examples-Point-getBalance-title-200").text("Status: 200 - " + responsePoint200_description);
                               } else {
-                                $("#examples-Point-getUser-title-200").text("Status: 200 - " + responsePoint200_description.substring(0, responsePoint200_description_break));
-                                $("#examples-Point-getUser-description-200").html(responsePoint200_description.substring(responsePoint200_description_break));
+                                $("#examples-Point-getBalance-title-200").text("Status: 200 - " + responsePoint200_description.substring(0, responsePoint200_description_break));
+                                $("#examples-Point-getBalance-description-200").html(responsePoint200_description.substring(responsePoint200_description_break));
                               }
                             </script>
 
 
-                            <ul id="responses-detail-Point-getUser-200" class="nav nav-tabs nav-tabs-examples" >
+                            <ul id="responses-detail-Point-getBalance-200" class="nav nav-tabs nav-tabs-examples" >
                                 <li class="active">
-                                  <a data-toggle="tab" href="#responses-Point-getUser-200-schema">Schema</a>
+                                  <a data-toggle="tab" href="#responses-Point-getBalance-200-schema">Schema</a>
                                 </li>
 
 
@@ -1218,9 +1714,9 @@ pub fn main() {
                             </ul>
 
 
-                            <div class="tab-content" id="responses-Point-getUser-200-wrapper" style='margin-bottom: 10px;'>
-                                <div class="tab-pane active" id="responses-Point-getUser-200-schema">
-                                  <div id="responses-Point-getUser-schema-200" class="exampleStyle">
+                            <div class="tab-content" id="responses-Point-getBalance-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Point-getBalance-200-schema">
+                                  <div id="responses-Point-getBalance-schema-200" class="exampleStyle">
                                     <script>
                                       $(document).ready(function() {
                                         var schemaWrapper = ;
@@ -1245,15 +1741,2365 @@ pub fn main() {
                                         }
 
                                         var view = new JSONSchemaView(schema, 3);
-                                        $('#responses-Point-getUser-200-schema-data').val(JSON.stringify(schema));
-                                        var result = $('#responses-Point-getUser-schema-200');
+                                        $('#responses-Point-getBalance-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Point-getBalance-schema-200');
                                         result.empty();
                                         result.append(view.render());
                                       });
                                     </script>
                                   </div>
-                                  <input id='responses-Point-getUser-200-schema-data' type='hidden' value=''></input>
+                                  <input id='responses-Point-getBalance-200-schema-data' type='hidden' value=''></input>
                                 </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Point-processPayment">
+                      <article id="api-Point-processPayment-0" data-group="User" data-name="processPayment" data-version="0">
+                        <div class="pull-left">
+                          <h1>processPayment</h1>
+                          <p>결제 처리 API</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">결제 처리 API</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/point/payment</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Point-processPayment-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Point-processPayment-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Point-processPayment-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Point-processPayment-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Point-processPayment-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Point-processPayment-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Point-processPayment-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Content-Type: application/json" \
+ "http://localhost/point/payment" \
+ -d ''
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Point-processPayment-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.PointApi;
+
+import java.io.File;
+import java.util.*;
+
+public class PointApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        PointApi apiInstance = new PointApi();
+        String xACCOUNTID = account123; // String | 사용자 ID
+        PointPayment1753207326 pointPayment1753207326 = {"reservationId":1}; // PointPayment1753207326 | 
+
+        try {
+            apiInstance.processPayment(xACCOUNTID, pointPayment1753207326);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PointApi#processPayment");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Point-processPayment-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String xACCOUNTID = new String(); // String | 사용자 ID
+final PointPayment1753207326 pointPayment1753207326 = new PointPayment1753207326(); // PointPayment1753207326 | 
+
+try {
+    final result = await api_instance.processPayment(xACCOUNTID, pointPayment1753207326);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->processPayment: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Point-processPayment-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.PointApi;
+
+public class PointApiExample {
+    public static void main(String[] args) {
+        PointApi apiInstance = new PointApi();
+        String xACCOUNTID = account123; // String | 사용자 ID
+        PointPayment1753207326 pointPayment1753207326 = {"reservationId":1}; // PointPayment1753207326 | 
+
+        try {
+            apiInstance.processPayment(xACCOUNTID, pointPayment1753207326);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PointApi#processPayment");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Point-processPayment-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Point-processPayment-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+PointApi *apiInstance = [[PointApi alloc] init];
+String *xACCOUNTID = account123; // 사용자 ID (default to null)
+PointPayment1753207326 *pointPayment1753207326 = {"reservationId":1}; //  (optional)
+
+// 결제 처리 API
+[apiInstance processPaymentWith:xACCOUNTID
+    pointPayment1753207326:pointPayment1753207326
+              completionHandler: ^(NSError* error) {
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-processPayment-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.PointApi()
+var xACCOUNTID = account123; // {String} 사용자 ID
+var opts = {
+  'pointPayment1753207326': {"reservationId":1} // {PointPayment1753207326} 
+};
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.processPayment(xACCOUNTID, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Point-processPayment-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Point-processPayment-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class processPaymentExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new PointApi();
+            var xACCOUNTID = account123;  // String | 사용자 ID (default to null)
+            var pointPayment1753207326 = new PointPayment1753207326(); // PointPayment1753207326 |  (optional) 
+
+            try {
+                // 결제 처리 API
+                apiInstance.processPayment(xACCOUNTID, pointPayment1753207326);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling PointApi.processPayment: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-processPayment-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\PointApi();
+$xACCOUNTID = account123; // String | 사용자 ID
+$pointPayment1753207326 = {"reservationId":1}; // PointPayment1753207326 | 
+
+try {
+    $api_instance->processPayment($xACCOUNTID, $pointPayment1753207326);
+} catch (Exception $e) {
+    echo 'Exception when calling PointApi->processPayment: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-processPayment-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::PointApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::PointApi->new();
+my $xACCOUNTID = account123; # String | 사용자 ID
+my $pointPayment1753207326 = WWW::OPenAPIClient::Object::PointPayment1753207326->new(); # PointPayment1753207326 | 
+
+eval {
+    $api_instance->processPayment(xACCOUNTID => $xACCOUNTID, pointPayment1753207326 => $pointPayment1753207326);
+};
+if ($@) {
+    warn "Exception when calling PointApi->processPayment: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-processPayment-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.PointApi()
+xACCOUNTID = account123 # String | 사용자 ID (default to null)
+pointPayment1753207326 = {"reservationId":1} # PointPayment1753207326 |  (optional)
+
+try:
+    # 결제 처리 API
+    api_instance.process_payment(xACCOUNTID, pointPayment1753207326=pointPayment1753207326)
+except ApiException as e:
+    print("Exception when calling PointApi->processPayment: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Point-processPayment-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate PointApi;
+
+pub fn main() {
+    let xACCOUNTID = account123; // String
+    let pointPayment1753207326 = {"reservationId":1}; // PointPayment1753207326
+
+    let mut context = PointApi::Context::default();
+    let result = client.processPayment(xACCOUNTID, pointPayment1753207326, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_processPayment_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 ID
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">pointPayment1753207326 </td>
+<td>
+<p class="marked"></p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/point-payment-1753207326"
+      },
+      "examples" : {
+        "process-payment" : {
+          "value" : "{\"reservationId\":1}"
+        }
+      }
+    }
+  }
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_processPayment_pointPayment1753207326');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_processPayment_pointPayment1753207326"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Point-processPayment-title-204"></h3>
+                            <p id="examples-Point-processPayment-description-204" class="marked"></p>
+                            <script>
+                              var responsePoint204_description = `204`;
+                              var responsePoint204_description_break = responsePoint204_description.indexOf('\n');
+                              if (responsePoint204_description_break == -1) {
+                                $("#examples-Point-processPayment-title-204").text("Status: 204 - " + responsePoint204_description);
+                              } else {
+                                $("#examples-Point-processPayment-title-204").text("Status: 204 - " + responsePoint204_description.substring(0, responsePoint204_description_break));
+                                $("#examples-Point-processPayment-description-204").html(responsePoint204_description.substring(responsePoint204_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Point-processPayment-204" class="nav nav-tabs nav-tabs-examples" >
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Point-processPayment-204-wrapper" style='margin-bottom: 10px;'>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Queue">
+                  <h1>Queue</h1>
+                    <div id="api-Queue-createQueueToken">
+                      <article id="api-Queue-createQueueToken-0" data-group="User" data-name="createQueueToken" data-version="0">
+                        <div class="pull-left">
+                          <h1>createQueueToken</h1>
+                          <p>대기열 토큰 발급</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">대기열 토큰 발급</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/queue/token</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Queue-createQueueToken-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Queue-createQueueToken-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Queue-createQueueToken-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Queue-createQueueToken-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Queue-createQueueToken-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Accept: application/json" \
+ "http://localhost/queue/token"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Queue-createQueueToken-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.QueueApi;
+
+import java.io.File;
+import java.util.*;
+
+public class QueueApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        QueueApi apiInstance = new QueueApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+        try {
+            queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling QueueApi#createQueueToken");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Queue-createQueueToken-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+
+try {
+    final result = await api_instance.createQueueToken(xACCOUNTID);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->createQueueToken: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Queue-createQueueToken-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.QueueApi;
+
+public class QueueApiExample {
+    public static void main(String[] args) {
+        QueueApi apiInstance = new QueueApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+        try {
+            queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling QueueApi#createQueueToken");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Queue-createQueueToken-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+QueueApi *apiInstance = [[QueueApi alloc] init];
+String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+
+// 대기열 토큰 발급
+[apiInstance createQueueTokenWith:xACCOUNTID
+              completionHandler: ^(queue-token-1001903413 output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.QueueApi()
+var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.createQueueToken(xACCOUNTID, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Queue-createQueueToken-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class createQueueTokenExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new QueueApi();
+            var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+
+            try {
+                // 대기열 토큰 발급
+                queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling QueueApi.createQueueToken: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\QueueApi();
+$xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+try {
+    $result = $api_instance->createQueueToken($xACCOUNTID);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling QueueApi->createQueueToken: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::QueueApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::QueueApi->new();
+my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+
+eval {
+    my $result = $api_instance->createQueueToken(xACCOUNTID => $xACCOUNTID);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling QueueApi->createQueueToken: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.QueueApi()
+xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+
+try:
+    # 대기열 토큰 발급
+    api_response = api_instance.create_queue_token(xACCOUNTID)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling QueueApi->createQueueToken: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-createQueueToken-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate QueueApi;
+
+pub fn main() {
+    let xACCOUNTID = account123; // String
+
+    let mut context = QueueApi::Context::default();
+    let result = client.createQueueToken(xACCOUNTID, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_createQueueToken_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Queue-createQueueToken-title-200"></h3>
+                            <p id="examples-Queue-createQueueToken-description-200" class="marked"></p>
+                            <script>
+                              var responseQueue200_description = `200`;
+                              var responseQueue200_description_break = responseQueue200_description.indexOf('\n');
+                              if (responseQueue200_description_break == -1) {
+                                $("#examples-Queue-createQueueToken-title-200").text("Status: 200 - " + responseQueue200_description);
+                              } else {
+                                $("#examples-Queue-createQueueToken-title-200").text("Status: 200 - " + responseQueue200_description.substring(0, responseQueue200_description_break));
+                                $("#examples-Queue-createQueueToken-description-200").html(responseQueue200_description.substring(responseQueue200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Queue-createQueueToken-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Queue-createQueueToken-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Queue-createQueueToken-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Queue-createQueueToken-200-schema">
+                                  <div id="responses-Queue-createQueueToken-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Queue-createQueueToken-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Queue-createQueueToken-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Queue-createQueueToken-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Queue-getQueueStatus">
+                      <article id="api-Queue-getQueueStatus-0" data-group="User" data-name="getQueueStatus" data-version="0">
+                        <div class="pull-left">
+                          <h1>getQueueStatus</h1>
+                          <p>대기열 대기번호 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">대기열 대기번호 조회</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/queue/status</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Queue-getQueueStatus-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Queue-getQueueStatus-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Queue-getQueueStatus-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Queue-getQueueStatus-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Queue-getQueueStatus-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
+ -H "Accept: application/json" \
+ "http://localhost/queue/status"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Queue-getQueueStatus-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.QueueApi;
+
+import java.io.File;
+import java.util.*;
+
+public class QueueApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        QueueApi apiInstance = new QueueApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+        try {
+            queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling QueueApi#getQueueStatus");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Queue-getQueueStatus-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+
+try {
+    final result = await api_instance.getQueueStatus(xACCOUNTID);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getQueueStatus: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Queue-getQueueStatus-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.QueueApi;
+
+public class QueueApiExample {
+    public static void main(String[] args) {
+        QueueApi apiInstance = new QueueApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+        try {
+            queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling QueueApi#getQueueStatus");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Queue-getQueueStatus-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+QueueApi *apiInstance = [[QueueApi alloc] init];
+String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+
+// 대기열 대기번호 조회
+[apiInstance getQueueStatusWith:xACCOUNTID
+              completionHandler: ^(queue-status390315021 output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.QueueApi()
+var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getQueueStatus(xACCOUNTID, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Queue-getQueueStatus-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getQueueStatusExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new QueueApi();
+            var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+
+            try {
+                // 대기열 대기번호 조회
+                queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling QueueApi.getQueueStatus: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\QueueApi();
+$xACCOUNTID = account123; // String | 사용자 식별 헤더
+
+try {
+    $result = $api_instance->getQueueStatus($xACCOUNTID);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling QueueApi->getQueueStatus: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::QueueApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::QueueApi->new();
+my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+
+eval {
+    my $result = $api_instance->getQueueStatus(xACCOUNTID => $xACCOUNTID);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling QueueApi->getQueueStatus: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.QueueApi()
+xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+
+try:
+    # 대기열 대기번호 조회
+    api_response = api_instance.get_queue_status(xACCOUNTID)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling QueueApi->getQueueStatus: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Queue-getQueueStatus-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate QueueApi;
+
+pub fn main() {
+    let xACCOUNTID = account123; // String
+
+    let mut context = QueueApi::Context::default();
+    let result = client.getQueueStatus(xACCOUNTID, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_getQueueStatus_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Queue-getQueueStatus-title-200"></h3>
+                            <p id="examples-Queue-getQueueStatus-description-200" class="marked"></p>
+                            <script>
+                              var responseQueue200_description = `200`;
+                              var responseQueue200_description_break = responseQueue200_description.indexOf('\n');
+                              if (responseQueue200_description_break == -1) {
+                                $("#examples-Queue-getQueueStatus-title-200").text("Status: 200 - " + responseQueue200_description);
+                              } else {
+                                $("#examples-Queue-getQueueStatus-title-200").text("Status: 200 - " + responseQueue200_description.substring(0, responseQueue200_description_break));
+                                $("#examples-Queue-getQueueStatus-description-200").html(responseQueue200_description.substring(responseQueue200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Queue-getQueueStatus-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Queue-getQueueStatus-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Queue-getQueueStatus-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Queue-getQueueStatus-200-schema">
+                                  <div id="responses-Queue-getQueueStatus-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Queue-getQueueStatus-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Queue-getQueueStatus-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Queue-getQueueStatus-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                  </section>
+                <section id="api-Reservation">
+                  <h1>Reservation</h1>
+                    <div id="api-Reservation-getAvailableDates">
+                      <article id="api-Reservation-getAvailableDates-0" data-group="User" data-name="getAvailableDates" data-version="0">
+                        <div class="pull-left">
+                          <h1>getAvailableDates</h1>
+                          <p>예약 가능 날짜 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">예약 가능 날짜 조회</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/reservation/available-dates</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Reservation-getAvailableDates-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-getAvailableDates-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-getAvailableDates-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableDates-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Reservation-getAvailableDates-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
+ -H "Accept: application/json" \
+ "http://localhost/reservation/available-dates?concert-id=concertId_example"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.ReservationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        ReservationApi apiInstance = new ReservationApi();
+        String concertId = concertId_example; // String | 콘서트 ID
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+        try {
+            reservation-available-dates947196616 result = apiInstance.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#getAvailableDates");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String concertId = new String(); // String | 콘서트 ID
+final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
+
+try {
+    final result = await api_instance.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getAvailableDates: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.ReservationApi;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+        ReservationApi apiInstance = new ReservationApi();
+        String concertId = concertId_example; // String | 콘서트 ID
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+        try {
+            reservation-available-dates947196616 result = apiInstance.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#getAvailableDates");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+ReservationApi *apiInstance = [[ReservationApi alloc] init];
+String *concertId = concertId_example; // 콘서트 ID (default to null)
+String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토큰 헤더 (default to null)
+
+// 예약 가능 날짜 조회
+[apiInstance getAvailableDatesWith:concertId
+    xACCOUNTID:xACCOUNTID
+    xQUEUETOKENID:xQUEUETOKENID
+              completionHandler: ^(reservation-available-dates947196616 output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.ReservationApi()
+var concertId = concertId_example; // {String} 콘서트 ID
+var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // {String} 대기열 토큰 헤더
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Reservation-getAvailableDates-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getAvailableDatesExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new ReservationApi();
+            var concertId = concertId_example;  // String | 콘서트 ID (default to null)
+            var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+            var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24;  // String | 대기열 토큰 헤더 (default to null)
+
+            try {
+                // 예약 가능 날짜 조회
+                reservation-available-dates947196616 result = apiInstance.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling ReservationApi.getAvailableDates: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\ReservationApi();
+$concertId = concertId_example; // String | 콘서트 ID
+$xACCOUNTID = account123; // String | 사용자 식별 헤더
+$xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+try {
+    $result = $api_instance->getAvailableDates($concertId, $xACCOUNTID, $xQUEUETOKENID);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ReservationApi->getAvailableDates: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::ReservationApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::ReservationApi->new();
+my $concertId = concertId_example; # String | 콘서트 ID
+my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+my $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; # String | 대기열 토큰 헤더
+
+eval {
+    my $result = $api_instance->getAvailableDates(concertId => $concertId, xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ReservationApi->getAvailableDates: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.ReservationApi()
+concertId = concertId_example # String | 콘서트 ID (default to null)
+xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24 # String | 대기열 토큰 헤더 (default to null)
+
+try:
+    # 예약 가능 날짜 조회
+    api_response = api_instance.get_available_dates(concertId, xACCOUNTID, xQUEUETOKENID)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ReservationApi->getAvailableDates: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableDates-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate ReservationApi;
+
+pub fn main() {
+    let concertId = concertId_example; // String
+    let xACCOUNTID = account123; // String
+    let xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String
+
+    let mut context = ReservationApi::Context::default();
+    let result = client.getAvailableDates(concertId, xACCOUNTID, xQUEUETOKENID, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableDates_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                  <tr><td style="width:150px;">X-QUEUE-TOKEN-ID*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableDates_xQUEUETOKENID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+대기열 토큰 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">concert-id*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableDates_concertId">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+콘서트 ID
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Reservation-getAvailableDates-title-200"></h3>
+                            <p id="examples-Reservation-getAvailableDates-description-200" class="marked"></p>
+                            <script>
+                              var responseReservation200_description = `200`;
+                              var responseReservation200_description_break = responseReservation200_description.indexOf('\n');
+                              if (responseReservation200_description_break == -1) {
+                                $("#examples-Reservation-getAvailableDates-title-200").text("Status: 200 - " + responseReservation200_description);
+                              } else {
+                                $("#examples-Reservation-getAvailableDates-title-200").text("Status: 200 - " + responseReservation200_description.substring(0, responseReservation200_description_break));
+                                $("#examples-Reservation-getAvailableDates-description-200").html(responseReservation200_description.substring(responseReservation200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Reservation-getAvailableDates-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Reservation-getAvailableDates-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Reservation-getAvailableDates-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Reservation-getAvailableDates-200-schema">
+                                  <div id="responses-Reservation-getAvailableDates-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Reservation-getAvailableDates-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Reservation-getAvailableDates-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Reservation-getAvailableDates-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Reservation-getAvailableSeats">
+                      <article id="api-Reservation-getAvailableSeats-0" data-group="User" data-name="getAvailableSeats" data-version="0">
+                        <div class="pull-left">
+                          <h1>getAvailableSeats</h1>
+                          <p>예약 가능 좌석 조회</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">예약 가능 좌석 조회</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="get"><code><span class="pln">/reservation/available-seats</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Reservation-getAvailableSeats-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-getAvailableSeats-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-getAvailableSeats-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Reservation-getAvailableSeats-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Reservation-getAvailableSeats-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X GET \
+ -H "Accept: application/json" \
+ "http://localhost/reservation/available-seats?date=date_example"
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.ReservationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        ReservationApi apiInstance = new ReservationApi();
+        String date = date_example; // String | 검색 일자
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+        try {
+            reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#getAvailableSeats");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String date = new String(); // String | 검색 일자
+final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
+
+try {
+    final result = await api_instance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->getAvailableSeats: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.ReservationApi;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+        ReservationApi apiInstance = new ReservationApi();
+        String date = date_example; // String | 검색 일자
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+        try {
+            reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#getAvailableSeats");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+ReservationApi *apiInstance = [[ReservationApi alloc] init];
+String *date = date_example; // 검색 일자 (default to null)
+String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토큰 헤더 (default to null)
+
+// 예약 가능 좌석 조회
+[apiInstance getAvailableSeatsWith:date
+    xACCOUNTID:xACCOUNTID
+    xQUEUETOKENID:xQUEUETOKENID
+              completionHandler: ^(reservation-available-seats-1320903909 output, NSError* error) {
+    if (output) {
+        NSLog(@"%@", output);
+    }
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.ReservationApi()
+var date = date_example; // {String} 검색 일자
+var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // {String} 대기열 토큰 헤더
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully. Returned data: ' + data);
+  }
+};
+api.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class getAvailableSeatsExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new ReservationApi();
+            var date = date_example;  // String | 검색 일자 (default to null)
+            var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+            var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24;  // String | 대기열 토큰 헤더 (default to null)
+
+            try {
+                // 예약 가능 좌석 조회
+                reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+                Debug.WriteLine(result);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling ReservationApi.getAvailableSeats: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\ReservationApi();
+$date = date_example; // String | 검색 일자
+$xACCOUNTID = account123; // String | 사용자 식별 헤더
+$xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+
+try {
+    $result = $api_instance->getAvailableSeats($date, $xACCOUNTID, $xQUEUETOKENID);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling ReservationApi->getAvailableSeats: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::ReservationApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::ReservationApi->new();
+my $date = date_example; # String | 검색 일자
+my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+my $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; # String | 대기열 토큰 헤더
+
+eval {
+    my $result = $api_instance->getAvailableSeats(date => $date, xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID);
+    print Dumper($result);
+};
+if ($@) {
+    warn "Exception when calling ReservationApi->getAvailableSeats: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.ReservationApi()
+date = date_example # String | 검색 일자 (default to null)
+xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24 # String | 대기열 토큰 헤더 (default to null)
+
+try:
+    # 예약 가능 좌석 조회
+    api_response = api_instance.get_available_seats(date, xACCOUNTID, xQUEUETOKENID)
+    pprint(api_response)
+except ApiException as e:
+    print("Exception when calling ReservationApi->getAvailableSeats: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate ReservationApi;
+
+pub fn main() {
+    let date = date_example; // String
+    let xACCOUNTID = account123; // String
+    let xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String
+
+    let mut context = ReservationApi::Context::default();
+    let result = client.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableSeats_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                  <tr><td style="width:150px;">X-QUEUE-TOKEN-ID*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableSeats_xQUEUETOKENID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+대기열 토큰 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                            <div class="methodsubtabletitle">Query parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">date*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableSeats_date">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+검색 일자
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Reservation-getAvailableSeats-title-200"></h3>
+                            <p id="examples-Reservation-getAvailableSeats-description-200" class="marked"></p>
+                            <script>
+                              var responseReservation200_description = `200`;
+                              var responseReservation200_description_break = responseReservation200_description.indexOf('\n');
+                              if (responseReservation200_description_break == -1) {
+                                $("#examples-Reservation-getAvailableSeats-title-200").text("Status: 200 - " + responseReservation200_description);
+                              } else {
+                                $("#examples-Reservation-getAvailableSeats-title-200").text("Status: 200 - " + responseReservation200_description.substring(0, responseReservation200_description_break));
+                                $("#examples-Reservation-getAvailableSeats-description-200").html(responseReservation200_description.substring(responseReservation200_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Reservation-getAvailableSeats-200" class="nav nav-tabs nav-tabs-examples" >
+                                <li class="active">
+                                  <a data-toggle="tab" href="#responses-Reservation-getAvailableSeats-200-schema">Schema</a>
+                                </li>
+
+
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Reservation-getAvailableSeats-200-wrapper" style='margin-bottom: 10px;'>
+                                <div class="tab-pane active" id="responses-Reservation-getAvailableSeats-200-schema">
+                                  <div id="responses-Reservation-getAvailableSeats-schema-200" class="exampleStyle">
+                                    <script>
+                                      $(document).ready(function() {
+                                        var schemaWrapper = ;
+                                        var schema = findNode('schema',schemaWrapper).schema;
+                                        if (!schema) {
+                                          schema = schemaWrapper.schema;
+                                        }
+                                        if (schema.$ref != null) {
+                                          schema = defsParser.$refs.get(schema.$ref);
+                                          Object.keys(schema.properties).forEach( (item) => {
+                                            if (schema.properties[item].$ref != null) {
+                                              schema.properties[item] = defsParser.$refs.get(schema.properties[item].$ref);
+                                            }
+                                          });
+                                        } else if (schema.items != null && schema.items.$ref != null) {
+                                            schema.items = defsParser.$refs.get(schema.items.$ref);
+                                        } else {
+                                          schemaWrapper.definitions = Object.assign({}, defs);
+                                          $RefParser.dereference(schemaWrapper).catch(function(err) {
+                                            console.log(err);
+                                          });
+                                        }
+
+                                        var view = new JSONSchemaView(schema, 3);
+                                        $('#responses-Reservation-getAvailableSeats-200-schema-data').val(JSON.stringify(schema));
+                                        var result = $('#responses-Reservation-getAvailableSeats-schema-200');
+                                        result.empty();
+                                        result.append(view.render());
+                                      });
+                                    </script>
+                                  </div>
+                                  <input id='responses-Reservation-getAvailableSeats-200-schema-data' type='hidden' value=''></input>
+                                </div>
+                            </div>
+                        </article>
+                      </div>
+                      <hr>
+                    <div id="api-Reservation-reserveSeat">
+                      <article id="api-Reservation-reserveSeat-0" data-group="User" data-name="reserveSeat" data-version="0">
+                        <div class="pull-left">
+                          <h1>reserveSeat</h1>
+                          <p>좌석 예약 요청</p>
+                        </div>
+                        <div class="pull-right"></div>
+                        <div class="clearfix"></div>
+                        <p></p>
+                        <p class="marked">좌석 예약 요청</p>
+                        <p></p>
+                        <br />
+                        <pre class="prettyprint language-html prettyprinted" data-type="post"><code><span class="pln">/reservation</span></code></pre>
+                        <p>
+                          <h3>Usage and SDK Samples</h3>
+                        </p>
+                        <ul class="nav nav-tabs nav-tabs-examples">
+                          <li class="active"><a href="#examples-Reservation-reserveSeat-0-curl">Curl</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-java">Java</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-dart">Dart</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-android">Android</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-reserveSeat-0-groovy">Groovy</a></li>-->
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-objc">Obj-C</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-javascript">JavaScript</a></li>
+                          <!--<li class=""><a href="#examples-Reservation-reserveSeat-0-angular">Angular</a></li>-->
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-csharp">C#</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-php">PHP</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-perl">Perl</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-python">Python</a></li>
+                          <li class=""><a href="#examples-Reservation-reserveSeat-0-rust">Rust</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                          <div class="tab-pane active" id="examples-Reservation-reserveSeat-0-curl">
+                            <pre class="prettyprint"><code class="language-bsh">curl -X POST \
+ -H "Content-Type: application/json" \
+ "http://localhost/reservation" \
+ -d ''
+</code></pre>
+                          </div>
+                          <div class="tab-pane" id="examples-Reservation-reserveSeat-0-java">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.*;
+import org.openapitools.client.auth.*;
+import org.openapitools.client.model.*;
+import org.openapitools.client.api.ReservationApi;
+
+import java.io.File;
+import java.util.*;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+
+        // Create an instance of the API class
+        ReservationApi apiInstance = new ReservationApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+        Reservation171495653 reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+
+        try {
+            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#reserveSeat");
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-reserveSeat-0-dart">
+                            <pre class="prettyprint"><code class="language-dart">import 'package:openapi/api.dart';
+
+final api_instance = DefaultApi();
+
+final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
+final Reservation171495653 reservation171495653 = new Reservation171495653(); // Reservation171495653 | 
+
+try {
+    final result = await api_instance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+    print(result);
+} catch (e) {
+    print('Exception when calling DefaultApi->reserveSeat: $e\n');
+}
+
+</code></pre>
+                          </div>
+
+                          <div class="tab-pane" id="examples-Reservation-reserveSeat-0-android">
+                            <pre class="prettyprint"><code class="language-java">import org.openapitools.client.api.ReservationApi;
+
+public class ReservationApiExample {
+    public static void main(String[] args) {
+        ReservationApi apiInstance = new ReservationApi();
+        String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+        Reservation171495653 reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+
+        try {
+            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling ReservationApi#reserveSeat");
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
+                          </div>
+  <!--
+  <div class="tab-pane" id="examples-Reservation-reserveSeat-0-groovy">
+  <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+  </div> -->
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-objc">
+                              <pre class="prettyprint"><code class="language-cpp">
+
+// Create an instance of the API class
+ReservationApi *apiInstance = [[ReservationApi alloc] init];
+String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토큰 헤더 (default to null)
+Reservation171495653 *reservation171495653 = {"seatId":1}; //  (optional)
+
+// 좌석 예약 요청
+[apiInstance reserveSeatWith:xACCOUNTID
+    xQUEUETOKENID:xQUEUETOKENID
+    reservation171495653:reservation171495653
+              completionHandler: ^(NSError* error) {
+    if (error) {
+        NSLog(@"Error: %@", error);
+    }
+}];
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-javascript">
+                              <pre class="prettyprint"><code class="language-js">var ApiDocumentation = require('api_documentation');
+
+// Create an instance of the API class
+var api = new ApiDocumentation.ReservationApi()
+var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // {String} 대기열 토큰 헤더
+var opts = {
+  'reservation171495653': {"seatId":1} // {Reservation171495653} 
+};
+
+var callback = function(error, data, response) {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('API called successfully.');
+  }
+};
+api.reserveSeat(xACCOUNTID, xQUEUETOKENID, opts, callback);
+</code></pre>
+                            </div>
+
+                            <!--<div class="tab-pane" id="examples-Reservation-reserveSeat-0-angular">
+              <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
+            </div>-->
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-csharp">
+                              <pre class="prettyprint"><code class="language-cs">using System;
+using System.Diagnostics;
+using Org.OpenAPITools.Api;
+using Org.OpenAPITools.Client;
+using Org.OpenAPITools.Model;
+
+namespace Example
+{
+    public class reserveSeatExample
+    {
+        public void main()
+        {
+
+            // Create an instance of the API class
+            var apiInstance = new ReservationApi();
+            var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+            var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24;  // String | 대기열 토큰 헤더 (default to null)
+            var reservation171495653 = new Reservation171495653(); // Reservation171495653 |  (optional) 
+
+            try {
+                // 좌석 예약 요청
+                apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+            } catch (Exception e) {
+                Debug.Print("Exception when calling ReservationApi.reserveSeat: " + e.Message );
+            }
+        }
+    }
+}
+</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-php">
+                              <pre class="prettyprint"><code class="language-php"><&#63;php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+// Create an instance of the API class
+$api_instance = new OpenAPITools\Client\Api\ReservationApi();
+$xACCOUNTID = account123; // String | 사용자 식별 헤더
+$xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
+$reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+
+try {
+    $api_instance->reserveSeat($xACCOUNTID, $xQUEUETOKENID, $reservation171495653);
+} catch (Exception $e) {
+    echo 'Exception when calling ReservationApi->reserveSeat: ', $e->getMessage(), PHP_EOL;
+}
+?></code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-perl">
+                              <pre class="prettyprint"><code class="language-perl">use Data::Dumper;
+use WWW::OPenAPIClient::Configuration;
+use WWW::OPenAPIClient::ReservationApi;
+
+# Create an instance of the API class
+my $api_instance = WWW::OPenAPIClient::ReservationApi->new();
+my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+my $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; # String | 대기열 토큰 헤더
+my $reservation171495653 = WWW::OPenAPIClient::Object::Reservation171495653->new(); # Reservation171495653 | 
+
+eval {
+    $api_instance->reserveSeat(xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID, reservation171495653 => $reservation171495653);
+};
+if ($@) {
+    warn "Exception when calling ReservationApi->reserveSeat: $@\n";
+}</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-python">
+                              <pre class="prettyprint"><code class="language-python">from __future__ import print_statement
+import time
+import openapi_client
+from openapi_client.rest import ApiException
+from pprint import pprint
+
+# Create an instance of the API class
+api_instance = openapi_client.ReservationApi()
+xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24 # String | 대기열 토큰 헤더 (default to null)
+reservation171495653 = {"seatId":1} # Reservation171495653 |  (optional)
+
+try:
+    # 좌석 예약 요청
+    api_instance.reserve_seat(xACCOUNTID, xQUEUETOKENID, reservation171495653=reservation171495653)
+except ApiException as e:
+    print("Exception when calling ReservationApi->reserveSeat: %s\n" % e)</code></pre>
+                            </div>
+
+                            <div class="tab-pane" id="examples-Reservation-reserveSeat-0-rust">
+                              <pre class="prettyprint"><code class="language-rust">extern crate ReservationApi;
+
+pub fn main() {
+    let xACCOUNTID = account123; // String
+    let xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String
+    let reservation171495653 = {"seatId":1}; // Reservation171495653
+
+    let mut context = ReservationApi::Context::default();
+    let result = client.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653, &context).wait();
+
+    println!("{:?}", result);
+}
+</code></pre>
+                            </div>
+                          </div>
+
+                          <h2>Scopes</h2>
+                          <table>
+                            
+                          </table>
+
+                          <h2>Parameters</h2>
+
+
+                            <div class="methodsubtabletitle">Header parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                  <tr><td style="width:150px;">X-ACCOUNT-ID*</td>
+<td>
+
+
+    <div id="d2e199_reserveSeat_xACCOUNTID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                  <tr><td style="width:150px;">X-QUEUE-TOKEN-ID*</td>
+<td>
+
+
+    <div id="d2e199_reserveSeat_xQUEUETOKENID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+대기열 토큰 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                            </table>
+
+                            <div class="methodsubtabletitle">Body parameters</div>
+                            <table id="methodsubtable">
+                              <tr>
+                                <th width="150px">Name</th>
+                                <th>Description</th>
+                              </tr>
+                                <tr><td style="width:150px;">reservation171495653 </td>
+<td>
+<p class="marked"></p>
+<script>
+$(document).ready(function() {
+  var schemaWrapper = {
+  "content" : {
+    "application/json" : {
+      "schema" : {
+        "$ref" : "#/components/schemas/reservation-171495653"
+      },
+      "examples" : {
+        "reserve-seat" : {
+          "value" : "{\"seatId\":1}"
+        }
+      }
+    }
+  }
+};
+
+  var schema = findNode('schema',schemaWrapper).schema;
+  if (!schema) {
+    schema = schemaWrapper.schema;
+  }
+  if (schema.$ref != null) {
+    schema = defsParser.$refs.get(schema.$ref);
+  } else {
+    schemaWrapper.definitions = Object.assign({}, defs);
+    $RefParser.dereference(schemaWrapper).catch(function(err) {
+      console.log(err);
+    });
+  }
+
+  var view = new JSONSchemaView(schema,2,{isBodyParam: true});
+  var result = $('#d2e199_reserveSeat_reservation171495653');
+  result.empty();
+  result.append(view.render());
+});
+</script>
+<div id="d2e199_reserveSeat_reservation171495653"></div>
+</td>
+</tr>
+
+                            </table>
+
+
+
+                          <h2>Responses</h2>
+                            <h3 id="examples-Reservation-reserveSeat-title-204"></h3>
+                            <p id="examples-Reservation-reserveSeat-description-204" class="marked"></p>
+                            <script>
+                              var responseReservation204_description = `204`;
+                              var responseReservation204_description_break = responseReservation204_description.indexOf('\n');
+                              if (responseReservation204_description_break == -1) {
+                                $("#examples-Reservation-reserveSeat-title-204").text("Status: 204 - " + responseReservation204_description);
+                              } else {
+                                $("#examples-Reservation-reserveSeat-title-204").text("Status: 204 - " + responseReservation204_description.substring(0, responseReservation204_description_break));
+                                $("#examples-Reservation-reserveSeat-description-204").html(responseReservation204_description.substring(responseReservation204_description_break));
+                              }
+                            </script>
+
+
+                            <ul id="responses-detail-Reservation-reserveSeat-204" class="nav nav-tabs nav-tabs-examples" >
+
+
+                            </ul>
+
+
+                            <div class="tab-content" id="responses-Reservation-reserveSeat-204-wrapper" style='margin-bottom: 10px;'>
                             </div>
                         </article>
                       </div>

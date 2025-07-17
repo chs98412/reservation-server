@@ -72,7 +72,7 @@ class ReservationControllerTest {
                                 parameterWithName("concert-id").description("콘서트 ID")
                             )
                             .responseFields(
-                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("대기 번호"),
+                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("예약 가능 날짜 목록"),
                             )
                             .build()
                     )
