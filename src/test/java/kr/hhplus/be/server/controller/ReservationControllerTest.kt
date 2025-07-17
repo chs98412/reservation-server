@@ -5,11 +5,14 @@ import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
@@ -18,6 +21,7 @@ import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -32,6 +36,8 @@ class ReservationControllerTest {
     lateinit var context: WebApplicationContext
 
     lateinit var mockMvc: MockMvc
+
+    val objectMapper = jacksonObjectMapper()
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
@@ -104,4 +110,37 @@ class ReservationControllerTest {
                 )
             )
     }
+
+    @Test
+    fun `좌석 예약 요청 API`() {
+        val requestBody = SeatReservationRequest(seatId = 1)
+
+        mockMvc.perform(
+            post("/reservation")
+                .header("X-ACCOUNT-ID", "account123")
+                .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBody))
+        )
+            .andExpect(status().isNoContent)
+            .andDo(
+                document(
+                    "reserve-seat",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("좌석 예약 요청")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더"),
+                                headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
+                            )
+                            .requestFields(
+                                fieldWithPath("seatId").type(JsonFieldType.NUMBER).description("예약할 좌석 번호")
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
 }

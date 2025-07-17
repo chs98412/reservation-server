@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.controller
 
+import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableDatesResponse
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableSeatListResponse
 import org.springframework.http.ResponseEntity
@@ -27,5 +28,14 @@ class ReservationController {
         @RequestParam("date") date: LocalDate,
     ): ResponseEntity<ReservationAvailableSeatListResponse> {
         return ResponseEntity.ok(ReservationAvailableSeatListResponse.mockResponse)
+    }
+
+    @PostMapping("")
+    fun reserveSeat(
+        @RequestHeader("X-ACCOUNT-ID") accountId: String,
+        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
+        @RequestBody request: SeatReservationRequest,
+    ): ResponseEntity<Void> {
+        return ResponseEntity.noContent().build()
     }
 }
