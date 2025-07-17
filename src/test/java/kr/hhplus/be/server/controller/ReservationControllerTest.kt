@@ -6,6 +6,7 @@ import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kr.hhplus.be.server.controller.model.request.PaymentRequest
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -136,6 +137,40 @@ class ReservationControllerTest {
                             )
                             .requestFields(
                                 fieldWithPath("seatId").type(JsonFieldType.NUMBER).description("예약할 좌석 번호")
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `결제 처리 API`() {
+        val request = PaymentRequest(
+            reservationId = 1,
+        )
+
+        val json = jacksonObjectMapper().writeValueAsString(request)
+
+        mockMvc.perform(
+            post("/point/payment")
+                .header("X-ACCOUNT-ID", "account123")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        )
+            .andExpect(status().isNoContent)
+            .andDo(
+                document(
+                    "process-payment",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("결제 처리 API")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 ID"),
+                            )
+                            .requestFields(
+                                fieldWithPath("reservationId").type(JsonFieldType.NUMBER).description("예약 번호"),
                             )
                             .build()
                     )
