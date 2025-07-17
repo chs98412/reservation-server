@@ -19,6 +19,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors.preproces
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
@@ -75,4 +76,31 @@ class PointControllerTest {
                 )
             )
     }
+
+    @Test
+    fun `잔액 조회 API`() {
+        mockMvc.perform(
+            get("/point")
+                .header("X-ACCOUNT-ID", "account123")
+        )
+            .andExpect(status().isOk)
+            .andDo(
+                document(
+                    "get-balance",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("잔액 조회 API")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 ID")
+                            )
+                            .responseFields(
+                                fieldWithPath("balance").type(JsonFieldType.NUMBER).description("현재 잔액")
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
 }

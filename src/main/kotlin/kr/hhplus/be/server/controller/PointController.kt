@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.controller
 
 import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
+import kr.hhplus.be.server.controller.model.response.BalanceDetailResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -16,4 +17,10 @@ class PointController {
         return ResponseEntity.noContent().build()
     }
 
+    @GetMapping
+    fun getBalance(
+        @RequestHeader("X-ACCOUNT-ID") accountId: String
+    ): ResponseEntity<BalanceDetailResponse> {
+        return ResponseEntity.ok(BalanceDetailResponse.mockResponse)
+    }
 }
