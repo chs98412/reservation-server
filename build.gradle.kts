@@ -69,6 +69,11 @@ dependencies {
     testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.4")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
+
+    testImplementation("io.kotest:kotest-runner-junit5:5.9.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.9.0")
+    testImplementation("io.mockk:mockk:1.13.10")
 }
 
 tasks.withType<Test> {
