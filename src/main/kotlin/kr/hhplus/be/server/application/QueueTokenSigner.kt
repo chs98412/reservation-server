@@ -4,5 +4,5 @@ import kr.hhplus.be.server.domain.queue.QueueToken
 
 interface QueueTokenSigner {
     fun encode(token: QueueToken): String
-    fun decode(tokenString: String): QueueToken?
+    fun decode(tokenString: String): QueueToken
 }

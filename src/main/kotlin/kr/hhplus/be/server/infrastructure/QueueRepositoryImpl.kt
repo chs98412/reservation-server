@@ -24,4 +24,12 @@ class QueueRepositoryImpl : QueueRepository {
     override fun incrementEntranceNumber(amount: Long) {
         entranceNumber += amount
     }
+
+    override fun getQueueNumber(accountId: String): Long? {
+        return queuePositionMap[accountId]
+    }
+
+    override fun getCurrentEntranceNumber(): Long {
+        return entranceNumber
+    }
 }

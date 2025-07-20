@@ -8,6 +8,7 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockk
 import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.application.model.QueueTokenSummary
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -94,10 +95,14 @@ class QueueControllerTest {
 
 
     @Test
-    fun `대기 번호 조회 API`() {
+    fun `대기 상태 조회 API`() {
+        val summary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns summary
+
         mockMvc.perform(
             get("/queue/status")
                 .header("X-ACCOUNT-ID", "account123")
+                .header("X-QUEUE-TOKEN-ID", "queue-token")
         )
             .andExpect(status().isOk)
             .andDo(
@@ -108,13 +113,16 @@ class QueueControllerTest {
                         ResourceSnippetParameters.builder()
                             .description("대기열 대기번호 조회")
                             .requestHeaders(
-                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더")
+                                headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더"),
+                                headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
                             )
                             .responseFields(
-                                fieldWithPath("queueNumber").type(JsonFieldType.NUMBER).description("대기 번호"),
-                                fieldWithPath("estimatedWaitSeconds").type(JsonFieldType.NUMBER)
-                                    .description("예상 대기 시간"),
-                                fieldWithPath("status").type(JsonFieldType.STRING).description("대기 상태"),
+                                fieldWithPath("queueNumber").type(JsonFieldType.NUMBER).description("대기 번호")
+                                    .attributes(Attributes.key("queueNumber").value(summary.queueNumber)),
+                                fieldWithPath("isAllowedToEnter").type(JsonFieldType.BOOLEAN).description("입장 가능 여부")
+                                    .attributes(Attributes.key("isAllowedToEnter").value(summary.isAllowedToEnter)),
+                                fieldWithPath("estimateWaitTime").type(JsonFieldType.NUMBER)
+                                    .attributes(Attributes.key("estimateWaitTime").value(summary.estimateWaitTime)),
                             )
                             .build()
                     )
