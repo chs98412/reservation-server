@@ -6,6 +6,12 @@ import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.mockk.every
+import io.mockk.mockk
+import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.concert.ConcertService
+import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
+import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.controller.model.request.PaymentRequest
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
@@ -13,6 +19,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -20,6 +29,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.snippet.Attributes
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -29,14 +39,29 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.time.LocalDate
 
+@TestConfiguration
+class ReservationMockConfig {
+    @Bean
+    fun queueService(): QueueService = mockk(relaxed = true)
+
+    @Bean
+    fun concertService(): ConcertService = mockk(relaxed = true)
+}
 
 @ExtendWith(RestDocumentationExtension::class)
+@Import(ReservationMockConfig::class)
 @WebMvcTest
 class ReservationControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
 
     lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var queueService: QueueService
+
+    @Autowired
+    lateinit var concertService: ConcertService
 
     val objectMapper = jacksonObjectMapper()
 
@@ -51,6 +76,11 @@ class ReservationControllerTest {
 
     @Test
     fun `예약 가능 날짜 조회 API`() {
+        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns queueSummary
+
+        val summary = ConcertScheduleFetchSummary(availableDates = listOf(LocalDate.now()))
+        every { concertService.getAvailableDates(any()) } returns summary
         mockMvc.perform(
             get("/reservation/available-dates?concert-id={concert-id}", 1)
                 .header("X-ACCOUNT-ID", "account123")
@@ -72,7 +102,8 @@ class ReservationControllerTest {
                                 parameterWithName("concert-id").description("콘서트 ID")
                             )
                             .responseFields(
-                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("예약 가능 날짜 목록"),
+                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("예약 가능 날짜 목록")
+                                    .attributes(Attributes.key("availableDates").value(summary.availableDates)),
                             )
                             .build()
                     )

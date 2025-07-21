@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.controller
 
+import kr.hhplus.be.server.InvalidQueueTokenException
+import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.concert.ConcertService
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableDatesResponse
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableSeatListResponse
@@ -9,7 +12,10 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/reservation")
-class ReservationController {
+class ReservationController(
+    private val concertService: ConcertService,
+    private val queueService: QueueService,
+) {
 
     @GetMapping("/available-dates")
     fun getAvailableDates(
@@ -17,7 +23,8 @@ class ReservationController {
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
         @RequestParam("concert-id") concertId: String,
     ): ResponseEntity<ReservationAvailableDatesResponse> {
-        return ResponseEntity.ok(ReservationAvailableDatesResponse.mockResponse)
+        if (queueService.getStatus(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+        return ResponseEntity.ok(ReservationAvailableDatesResponse.from(concertService.getAvailableDates(concertId)))
     }
 
 
