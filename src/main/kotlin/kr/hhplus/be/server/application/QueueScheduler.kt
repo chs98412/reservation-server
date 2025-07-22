@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.application
 
 import kr.hhplus.be.server.domain.queue.QueueRepository
+import kr.hhplus.be.server.domain.queue.QueueToken
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
@@ -10,8 +11,8 @@ class QueueScheduler(
     private val queueRepository: QueueRepository,
 ) {
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = QueueToken.SCHEDULE_INTERVAL)
     fun increaseEntranceNumber() {
-        queueRepository.incrementEntranceNumber(amount = 30)
+        queueRepository.incrementEntranceNumber(amount = QueueToken.QUEUE_ENTRANCE_LIMIT)
     }
 }
