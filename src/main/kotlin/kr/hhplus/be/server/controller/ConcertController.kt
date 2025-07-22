@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/reservation")
-class ReservationController(
+class ConcertController(
     private val concertService: ConcertService,
     private val queueService: QueueService,
 ) {

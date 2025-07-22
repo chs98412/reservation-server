@@ -51,7 +51,7 @@ class ReservationMockConfig {
 @ExtendWith(RestDocumentationExtension::class)
 @Import(ReservationMockConfig::class)
 @WebMvcTest
-class ReservationControllerTest {
+class ConcertControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
 
