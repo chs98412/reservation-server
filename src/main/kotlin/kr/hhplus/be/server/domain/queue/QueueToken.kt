@@ -13,5 +13,7 @@ class QueueToken(
             queueNumber = queueNumber,
             createdAt = LocalDateTime.now(),
         )
+
+        const val QUEUE_ENTRANCE_LIMIT = 30L
     }
 }
