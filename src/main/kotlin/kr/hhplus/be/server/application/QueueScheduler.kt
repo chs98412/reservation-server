@@ -11,7 +11,7 @@ class QueueScheduler(
     private val queueRepository: QueueRepository,
 ) {
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = QueueToken.SCHEDULE_INTERVAL)
     fun increaseEntranceNumber() {
         queueRepository.incrementEntranceNumber(amount = QueueToken.QUEUE_ENTRANCE_LIMIT)
     }

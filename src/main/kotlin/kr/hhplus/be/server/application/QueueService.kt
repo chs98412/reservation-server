@@ -30,12 +30,16 @@ class QueueService(
         val queueNumber = queueRepository.getQueueNumber(queueToken.accountId)
             ?: throw QueueNotFoundException()
         val currentEntranceNumber = queueRepository.getCurrentEntranceNumber()
-        val isAllowedToEnter = canEnter(queueNumber, currentEntranceNumber, 30)
 
         return QueueStatusSummary.from(
             queueNumber = queueNumber,
-            isAllowedToEnter = isAllowedToEnter,
-            estimateWaitTime = estimateWaitTime(queueNumber, currentEntranceNumber, 30, 10000)
+            isAllowedToEnter = canEnter(queueNumber, currentEntranceNumber, QueueToken.EXPIRE_THRESHOLD),
+            estimateWaitTime = estimateWaitTime(
+                queueNumber,
+                currentEntranceNumber,
+                QueueToken.EXPIRE_THRESHOLD,
+                QueueToken.SCHEDULE_INTERVAL
+            )
         )
     }
 
