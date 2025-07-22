@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kr.hhplus.be.server.application.QueueService
 import kr.hhplus.be.server.application.concert.ConcertService
+import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
 import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
 import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.controller.model.request.PaymentRequest
@@ -114,6 +115,11 @@ class ConcertControllerTest {
 
     @Test
     fun `예약 가능 좌석 조회 API`() {
+        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns queueSummary
+
+        val summary = AvailableConcertReservationFetchSummary(availableConcertIdList = listOf(1, 2, 3))
+        every { concertService.getAvailableSeats(any(), any()) } returns summary
         mockMvc.perform(
             get("/reservation/available-seats?date={date}", LocalDate.now())
                 .header("X-ACCOUNT-ID", "account123")
@@ -135,7 +141,10 @@ class ConcertControllerTest {
                                 parameterWithName("date").description("검색 일자")
                             )
                             .responseFields(
-                                fieldWithPath("availableSeats").type(JsonFieldType.ARRAY).description("예약 가능 좌석 목록"),
+                                fieldWithPath("availableSeats").type(JsonFieldType.ARRAY).description("예약 가능 좌석 목록")
+                                    .attributes(
+                                        Attributes.key("availableConcertIdList").value(summary.availableConcertIdList)
+                                    ),
                             )
                             .build()
                     )
