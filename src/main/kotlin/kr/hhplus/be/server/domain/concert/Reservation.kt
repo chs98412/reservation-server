@@ -37,4 +37,16 @@ class Reservation(
         status = "RESERVED"
         reservedAt = LocalDateTime.now()
     }
+
+    fun expireIfNeeded() {
+        if (reservedAt != null && reservedAt!!.plusMinutes(EXPIRATION_MINUTES).isBefore(LocalDateTime.now())) {
+            status = "AVAILABLE"
+            accountId = null
+            reservedAt = null
+        }
+    }
+
+    companion object {
+        private const val EXPIRATION_MINUTES = 5L
+    }
 }

@@ -49,4 +49,8 @@ class ConcertRepositoryImpl : ConcertRepository {
                     it.seatNo == seatNo
         }
     }
+
+    override fun findAllByStatus(status: String): List<Reservation> {
+        return reservationStorage.filter { it.status == status }
+    }
 }

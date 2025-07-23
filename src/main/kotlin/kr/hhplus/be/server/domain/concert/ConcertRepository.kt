@@ -14,4 +14,6 @@ interface ConcertRepository {
         scheduleId: Long,
         seatNo: Int,
     ): Reservation?
+
+    fun findAllByStatus(status: String): List<Reservation>
 }
