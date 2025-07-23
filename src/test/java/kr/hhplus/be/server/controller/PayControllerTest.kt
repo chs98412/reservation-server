@@ -8,9 +8,10 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
-import kr.hhplus.be.server.application.point.BalanceService
+import kr.hhplus.be.server.application.point.PayService
 import kr.hhplus.be.server.application.point.model.BalanceFetchSummary
 import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
+import kr.hhplus.be.server.controller.model.request.PaymentRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -37,12 +38,12 @@ import org.springframework.web.context.WebApplicationContext
 @TestConfiguration
 class PointMockConfig {
     @Bean
-    fun balanceService(): BalanceService = mockk(relaxed = true)
+    fun balanceService(): PayService = mockk(relaxed = true)
 }
 
 @ExtendWith(RestDocumentationExtension::class)
 @WebMvcTest
-class PointControllerTest {
+class PayControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
 
@@ -51,7 +52,7 @@ class PointControllerTest {
     private val objectMapper = jacksonObjectMapper()
 
     @Autowired
-    lateinit var balanceService: BalanceService
+    lateinit var payService: PayService
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
@@ -67,7 +68,7 @@ class PointControllerTest {
         val request = BalanceChargeRequest(amount = 10000)
         val json = objectMapper.writeValueAsString(request)
 
-        justRun { balanceService.charge(any(), any()) }
+        justRun { payService.charge(any(), any()) }
         mockMvc.perform(
             post("/point/charge")
                 .header("X-ACCOUNT-ID", "account123")
@@ -97,7 +98,7 @@ class PointControllerTest {
     @Test
     fun `잔액 조회 API`() {
         val summary = BalanceFetchSummary(100L)
-        every { balanceService.getBalance(any()) } returns summary
+        every { payService.getBalance(any()) } returns summary
 
         mockMvc.perform(
             get("/point")
@@ -119,6 +120,41 @@ class PointControllerTest {
                                     .attributes(
                                         Attributes.key("point").value(summary.point)
                                     ),
+                            )
+                            .build()
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `결제 처리 API`() {
+        val request = PaymentRequest(
+            reservationId = 1,
+        )
+
+        justRun { payService.processPayment(any()) }
+        val json = jacksonObjectMapper().writeValueAsString(request)
+
+        mockMvc.perform(
+            post("/point/payment")
+                .header("X-ACCOUNT-ID", "account123")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json)
+        )
+            .andExpect(status().isNoContent)
+            .andDo(
+                document(
+                    "process-payment",
+                    preprocessResponse(),
+                    resource(
+                        ResourceSnippetParameters.builder()
+                            .description("결제 처리 API")
+                            .requestHeaders(
+                                headerWithName("X-ACCOUNT-ID").description("사용자 ID"),
+                            )
+                            .requestFields(
+                                fieldWithPath("reservationId").type(JsonFieldType.NUMBER).description("예약 번호"),
                             )
                             .build()
                     )

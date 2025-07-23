@@ -10,6 +10,19 @@ class Reservation(
     val seatNumber: Int,
     val date: LocalDate,
     val userId: String? = null,
-    val status: String = "AVAILABLE", //TODO enum으로 변경
+    status: String = "AVAILABLE",
+    val price: Long = 1000, //TODO 등급별로 변동 가능하도록 수정
     val reservedAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    var status: String = "AVAILABLE" //TODO enum으로 변경
+        private set
+
+    fun markAsReserved() {
+        status = "RESERVED"
+    }
+
+    fun markAsPaid() {
+        status = "PAID"
+    }
+
+}
