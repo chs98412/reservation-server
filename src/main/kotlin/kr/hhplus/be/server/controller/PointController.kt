@@ -28,7 +28,7 @@ class PointController(
     ): ResponseEntity<BalanceDetailResponse> {
         balanceService.getBalance(accountId)
 
-        return ResponseEntity.ok(BalanceDetailResponse.mockResponse)
+        return ResponseEntity.ok(balanceService.getBalance(accountId).let(BalanceDetailResponse::from))
     }
 
     @PostMapping("/payment")
