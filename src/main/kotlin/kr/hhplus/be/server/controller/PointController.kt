@@ -26,8 +26,6 @@ class PointController(
     fun getBalance(
         @RequestHeader("X-ACCOUNT-ID") accountId: String
     ): ResponseEntity<BalanceDetailResponse> {
-        balanceService.getBalance(accountId)
-
         return ResponseEntity.ok(balanceService.getBalance(accountId).let(BalanceDetailResponse::from))
     }
 
