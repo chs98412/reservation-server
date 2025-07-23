@@ -5,12 +5,17 @@ import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.mockk.justRun
+import io.mockk.mockk
+import kr.hhplus.be.server.application.point.BalanceService
 import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -26,6 +31,11 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
+@TestConfiguration
+class PointMockConfig {
+    @Bean
+    fun balanceService(): BalanceService = mockk(relaxed = true)
+}
 
 @ExtendWith(RestDocumentationExtension::class)
 @WebMvcTest
@@ -36,6 +46,9 @@ class PointControllerTest {
     lateinit var mockMvc: MockMvc
 
     private val objectMapper = jacksonObjectMapper()
+
+    @Autowired
+    lateinit var balanceService: BalanceService
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
@@ -51,6 +64,7 @@ class PointControllerTest {
         val request = BalanceChargeRequest(amount = 10000)
         val json = objectMapper.writeValueAsString(request)
 
+        justRun { balanceService.charge(any(), any()) }
         mockMvc.perform(
             post("/point/charge")
                 .header("X-ACCOUNT-ID", "account123")
