@@ -7,14 +7,17 @@ class Reservation(
     val id: Long,
     val concertId: String,
     val scheduleId: Long,
-    val seatNumber: Int,
+    val seatNo: Int,
     val date: LocalDate,
-    val userId: String? = null,
+    accountId: String? = null,
     status: String = "AVAILABLE",
     val price: Long = 1000, //TODO 등급별로 변동 가능하도록 수정
-    val reservedAt: LocalDateTime = LocalDateTime.now()
 ) {
-    var status: String = "AVAILABLE" //TODO enum으로 변경
+    var accountId: String? = accountId
+        private set
+    var status: String = status //TODO enum으로 변경
+        private set
+    var reservedAt: LocalDateTime? = null
         private set
 
     fun markAsReserved() {
@@ -25,4 +28,13 @@ class Reservation(
         status = "PAID"
     }
 
+    fun isUnAvailableToReserve(): Boolean {
+        return status != "AVAILABLE"
+    }
+
+    fun reserve(accountId: String) {
+        this.accountId = accountId
+        status = "RESERVED"
+        reservedAt = LocalDateTime.now()
+    }
 }

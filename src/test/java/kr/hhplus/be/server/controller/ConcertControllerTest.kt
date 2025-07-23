@@ -153,7 +153,7 @@ class ConcertControllerTest {
 
     @Test
     fun `좌석 예약 요청 API`() {
-        val requestBody = SeatReservationRequest(seatId = 1)
+        val requestBody = SeatReservationRequest(concertId = "concert-id", scheduleId = 1, seatNo = 1)
 
         mockMvc.perform(
             post("/reservation")

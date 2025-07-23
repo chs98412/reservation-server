@@ -1,8 +1,10 @@
 package kr.hhplus.be.server.application.concert
 
+import kr.hhplus.be.server.AlreadyReservedSeatException
 import kr.hhplus.be.server.NotFoundConcertException
 import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
 import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
+import kr.hhplus.be.server.application.concert.model.SeatReservationCommand
 import kr.hhplus.be.server.domain.concert.ConcertRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -23,5 +25,13 @@ class ConcertService(
         return concertRepository.findAllByConcertIdAndDateAndStatus(concertId, date, "AVAILABLE").let {
             AvailableConcertReservationFetchSummary.from(it)
         }
+    }
+
+    fun reserveSeat(command: SeatReservationCommand) {
+        concertRepository.findByConcertIdAndScheduleIdAndSeatNo(command.concertId, command.scheduleId, command.seatNo)
+            ?.let {
+                if (it.isUnAvailableToReserve()) throw AlreadyReservedSeatException()
+                it.reserve(command.accountId)
+            } ?: throw NotFoundConcertException()
     }
 }

@@ -34,7 +34,19 @@ class ConcertRepositoryImpl : ConcertRepository {
 
     override fun findAllByUserIdAndStatus(userId: String, status: String): List<Reservation> {
         return reservationStorage.filter {
-            it.userId == userId && it.status == status
+            it.accountId == userId && it.status == status
+        }
+    }
+
+    override fun findByConcertIdAndScheduleIdAndSeatNo(
+        concertId: String,
+        scheduleId: Long,
+        seatNo: Int
+    ): Reservation? {
+        return reservationStorage.find {
+            it.concertId == concertId &&
+                    it.scheduleId == scheduleId &&
+                    it.seatNo == seatNo
         }
     }
 }

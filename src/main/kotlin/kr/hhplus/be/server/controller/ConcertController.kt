@@ -53,6 +53,8 @@ class ConcertController(
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
         @RequestBody request: SeatReservationRequest,
     ): ResponseEntity<Void> {
+        if (queueService.getStatus(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+        concertService.reserveSeat(request.toCommand(accountId))
         return ResponseEntity.noContent().build()
     }
 }
