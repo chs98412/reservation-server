@@ -32,9 +32,19 @@ class ConcertController(
     fun getAvailableSeats(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
+        @RequestParam("concert-id") concertId: String,
         @RequestParam("date") date: LocalDate,
     ): ResponseEntity<ReservationAvailableSeatListResponse> {
-        return ResponseEntity.ok(ReservationAvailableSeatListResponse.mockResponse)
+        if (queueService.getStatus(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+
+        return ResponseEntity.ok(
+            ReservationAvailableSeatListResponse.from(
+                concertService.getAvailableSeats(
+                    concertId,
+                    date
+                )
+            )
+        )
     }
 
     @PostMapping("")
