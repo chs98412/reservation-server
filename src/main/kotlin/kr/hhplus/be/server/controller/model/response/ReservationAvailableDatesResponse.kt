@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.controller.model.response
 
+import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
 import java.time.LocalDate
 
 
@@ -7,12 +8,8 @@ data class ReservationAvailableDatesResponse(
     val availableDates: List<LocalDate>
 ) {
     companion object {
-        val mockResponse = ReservationAvailableDatesResponse(
-            availableDates = listOf(
-                LocalDate.of(2025, 7, 1),
-                LocalDate.of(2025, 7, 2),
-                LocalDate.of(2025, 7, 3)
-            )
-        )
+        fun from(summary: ConcertScheduleFetchSummary) =
+            ReservationAvailableDatesResponse(availableDates = summary.availableDates)
+
     }
 }
