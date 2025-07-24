@@ -8,11 +8,11 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.application.queue.QueueService
 import kr.hhplus.be.server.application.concert.ConcertService
 import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
 import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
-import kr.hhplus.be.server.application.model.QueueStatusSummary
+import kr.hhplus.be.server.application.queue.QueueService
+import kr.hhplus.be.server.application.queue.QueueStatusResponse
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -76,7 +76,7 @@ class ConcertControllerTest {
 
     @Test
     fun `예약 가능 날짜 조회 API`() {
-        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
         every { queueService.getStatus(any()) } returns queueSummary
 
         val summary = ConcertScheduleFetchSummary(availableDates = listOf(LocalDate.now()))
@@ -117,7 +117,7 @@ class ConcertControllerTest {
 
     @Test
     fun `예약 가능 좌석 조회 API`() {
-        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
         every { queueService.getStatus(any()) } returns queueSummary
 
         val summary = AvailableConcertReservationFetchSummary(availableConcertIdList = listOf(1, 2, 3))
@@ -158,7 +158,7 @@ class ConcertControllerTest {
 
     @Test
     fun `좌석 예약 요청 API`() {
-        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
         every { queueService.getStatus(any()) } returns queueSummary
         val requestBody = SeatReservationRequest(concertId = "concert-id", scheduleId = 1, seatNo = 1)
 

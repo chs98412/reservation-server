@@ -1,6 +1,10 @@
-package kr.hhplus.be.server.application.model
+package kr.hhplus.be.server.application.queue
 
-data class QueueStatusSummary(
+interface GetStatusUseCase {
+    fun execute(queueTokenId: String): QueueStatusResponse
+}
+
+data class QueueStatusResponse(
     val queueNumber: Long,
     val isAllowedToEnter: Boolean,
     val estimateWaitTime: Long,
@@ -10,7 +14,7 @@ data class QueueStatusSummary(
             queueNumber: Long,
             isAllowedToEnter: Boolean,
             estimateWaitTime: Long
-        ) = QueueStatusSummary(
+        ) = QueueStatusResponse(
             queueNumber = queueNumber,
             isAllowedToEnter = isAllowedToEnter,
             estimateWaitTime = estimateWaitTime

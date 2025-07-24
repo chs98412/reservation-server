@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.controller
+package kr.hhplus.be.server.presentation
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document
 import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
@@ -7,9 +7,10 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.application.queue.QueueService
-import kr.hhplus.be.server.application.model.QueueStatusSummary
-import kr.hhplus.be.server.application.model.QueueTokenSummary
+import kr.hhplus.be.server.application.queue.CreateTokenUseCase
+import kr.hhplus.be.server.application.queue.GetStatusUseCase
+import kr.hhplus.be.server.application.queue.QueueStatusResponse
+import kr.hhplus.be.server.application.queue.QueueTokenResponse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -36,7 +37,10 @@ import org.springframework.web.context.WebApplicationContext
 @TestConfiguration
 class QueueMockConfig {
     @Bean
-    fun queueService(): QueueService = mockk(relaxed = true)
+    fun createTokenUseCase(): CreateTokenUseCase = mockk(relaxed = true)
+
+    @Bean
+    fun getStatusUseCase(): GetStatusUseCase = mockk(relaxed = true)
 }
 
 @ExtendWith(RestDocumentationExtension::class)
@@ -49,7 +53,10 @@ class QueueControllerTest {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var queueService: QueueService
+    lateinit var createTokenUseCase: CreateTokenUseCase
+
+    @Autowired
+    lateinit var getStatusUseCase: GetStatusUseCase
 
 
     @BeforeEach
@@ -65,8 +72,8 @@ class QueueControllerTest {
 
     @Test
     fun `대기열 토큰 발급 API`() {
-        val summary = QueueTokenSummary(token = "token")
-        every { queueService.createToken(any()) } returns QueueTokenSummary(token = "token")
+        val summary = QueueTokenResponse(token = "token")
+        every { createTokenUseCase.execute(any()) } returns QueueTokenResponse(token = "token")
 
         mockMvc.perform(
             post("/queue/token")
@@ -96,8 +103,8 @@ class QueueControllerTest {
 
     @Test
     fun `대기 상태 조회 API`() {
-        val summary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
-        every { queueService.getStatus(any()) } returns summary
+        val summary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { getStatusUseCase.execute(any()) } returns summary
 
         mockMvc.perform(
             get("/queue/status")

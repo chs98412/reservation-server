@@ -1,29 +1,17 @@
 package kr.hhplus.be.server.application.queue
 
-import kr.hhplus.be.server.common.exception.AlreadyAssignedQueueAccountException
 import kr.hhplus.be.server.common.exception.QueueNotFoundException
 import kr.hhplus.be.server.domain.queue.QueueRepository
 import kr.hhplus.be.server.domain.queue.QueueToken
 import org.springframework.stereotype.Service
 
 @Service
-class QueueService(
+class GetStatusService(
     private val queueRepository: QueueRepository,
     private val queueTokenSigner: QueueTokenSigner,
-) {
-    fun createToken(accountId: String): QueueTokenResponse {
+) : GetStatusUseCase {
 
-        //TODO 유저 검증 로직
-
-        val queueNumber =
-            queueRepository.assignQueueNumber(accountId) ?: throw AlreadyAssignedQueueAccountException()
-
-        val signedToken = QueueToken.create(accountId, queueNumber).let(queueTokenSigner::encode)
-
-        return QueueTokenResponse.from(signedToken = signedToken)
-    }
-
-    fun getStatus(queueTokenId: String): QueueStatusResponse {
+    override fun execute(queueTokenId: String): QueueStatusResponse {
         val queueToken = queueTokenSigner.decode(queueTokenId)
         val queueNumber = queueRepository.getQueueNumber(queueToken.accountId)
             ?: throw QueueNotFoundException()
