@@ -7,13 +7,13 @@ import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
-import kr.hhplus.be.server.application.concert.ConcertService
-import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
-import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
-import kr.hhplus.be.server.application.queue.QueueService
+import kr.hhplus.be.server.application.concert.*
+import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.application.queue.QueueStatusResponse
-import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
+import kr.hhplus.be.server.presentation.ConcertController
+import kr.hhplus.be.server.presentation.model.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -42,10 +42,16 @@ import java.time.LocalDate
 @TestConfiguration
 class ReservationMockConfig {
     @Bean
-    fun queueService(): QueueService = mockk(relaxed = true)
+    fun getStatusUseCase(): GetStatusUseCase = mockk(relaxed = true)
 
     @Bean
-    fun concertService(): ConcertService = mockk(relaxed = true)
+    fun getAvailableDatesUseCase(): GetAvailableDatesUseCase = mockk(relaxed = true)
+
+    @Bean
+    fun getAvailableSeatsUseCase(): GetAvailableSeatsUseCase = mockk(relaxed = true)
+
+    @Bean
+    fun reserveSeatUseCase(): ReserveSeatUseCase = mockk(relaxed = true)
 }
 
 @ExtendWith(RestDocumentationExtension::class)
@@ -58,10 +64,16 @@ class ConcertControllerTest {
     lateinit var mockMvc: MockMvc
 
     @Autowired
-    lateinit var queueService: QueueService
+    lateinit var getStatusUseCase: GetStatusUseCase
 
     @Autowired
-    lateinit var concertService: ConcertService
+    lateinit var getAvailableDatesUseCase: GetAvailableDatesUseCase
+
+    @Autowired
+    lateinit var getAvailableSeatsUseCase: GetAvailableSeatsUseCase
+
+    @Autowired
+    lateinit var reserveSeatUseCase: ReserveSeatUseCase
 
     val objectMapper = jacksonObjectMapper()
 
@@ -77,10 +89,10 @@ class ConcertControllerTest {
     @Test
     fun `예약 가능 날짜 조회 API`() {
         val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
-        every { queueService.getStatus(any()) } returns queueSummary
+        every { getStatusUseCase.execute(any()) } returns queueSummary
 
-        val summary = ConcertScheduleFetchSummary(availableDates = listOf(LocalDate.now()))
-        every { concertService.getAvailableDates(any()) } returns summary
+        val summary = ReservationAvailableDatesResponse(availableDates = listOf(LocalDate.now()))
+        every { getAvailableDatesUseCase.execute(any()) } returns summary
         mockMvc.perform(
             get("/reservation/available-dates?concert-id={concert-id}", "concert_a")
                 .header("X-ACCOUNT-ID", "account123")
@@ -118,10 +130,10 @@ class ConcertControllerTest {
     @Test
     fun `예약 가능 좌석 조회 API`() {
         val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
-        every { queueService.getStatus(any()) } returns queueSummary
+        every { getStatusUseCase.execute(any()) } returns queueSummary
 
-        val summary = AvailableConcertReservationFetchSummary(availableConcertIdList = listOf(1, 2, 3))
-        every { concertService.getAvailableSeats(any(), any()) } returns summary
+        val summary = AvailableConcertReservationFetchResponse(availableConcertIdList = listOf(1, 2, 3))
+        every { getAvailableSeatsUseCase.execute(any(), any()) } returns summary
         mockMvc.perform(
             get("/reservation/available-seats?date={date}&concert-id={concert-id}", LocalDate.now(), "concert_a")
                 .header("X-ACCOUNT-ID", "account123")
@@ -159,9 +171,9 @@ class ConcertControllerTest {
     @Test
     fun `좌석 예약 요청 API`() {
         val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
-        every { queueService.getStatus(any()) } returns queueSummary
+        every { getStatusUseCase.execute(any()) } returns queueSummary
         val requestBody = SeatReservationRequest(concertId = "concert-id", scheduleId = 1, seatNo = 1)
-
+        justRun { reserveSeatUseCase.execute(any()) }
         mockMvc.perform(
             post("/reservation")
                 .header("X-ACCOUNT-ID", "account123")

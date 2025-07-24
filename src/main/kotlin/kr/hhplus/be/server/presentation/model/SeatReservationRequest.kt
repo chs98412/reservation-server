@@ -1,6 +1,6 @@
-package kr.hhplus.be.server.controller.model.request
+package kr.hhplus.be.server.presentation.model
 
-import kr.hhplus.be.server.application.concert.model.SeatReservationCommand
+import kr.hhplus.be.server.application.concert.SeatReservationCommand
 
 data class SeatReservationRequest(
     val concertId: String,

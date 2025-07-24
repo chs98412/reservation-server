@@ -7,26 +7,13 @@ import io.mockk.mockk
 import io.mockk.verify
 import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
-import kr.hhplus.be.server.application.concert.model.SeatReservationCommand
 import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.concert.Reservation
 
-class ConcertServiceTest : BehaviorSpec({
+class ReserveSeatServiceTest : BehaviorSpec({
     val concertRepository = mockk<ConcertRepository>()
-    val concertService = ConcertService(concertRepository)
-    Given("예약 가능 날짜 조회에서") {
-        val concertId = "nonexistent-concert"
+    val reserveSeatService = ReserveSeatService(concertRepository)
 
-        When("해당 concertId에 대한 콘서트가 존재하지 않으면") {
-            every { concertRepository.findByConcertId(concertId) } returns null
-
-            Then("NotFoundConcertException이 발생해야 한다") {
-                shouldThrow<NotFoundConcertException> {
-                    concertService.getAvailableDates(concertId)
-                }
-            }
-        }
-    }
     val command = SeatReservationCommand(
         concertId = "concert-1",
         scheduleId = 1,
@@ -43,7 +30,7 @@ class ConcertServiceTest : BehaviorSpec({
 
         Then("NotFoundConcertException이 발생해야 한다") {
             shouldThrow<NotFoundConcertException> {
-                concertService.reserveSeat(command)
+                reserveSeatService.execute(command)
             }
         }
     }
@@ -60,7 +47,7 @@ class ConcertServiceTest : BehaviorSpec({
 
         Then("AlreadyReservedSeatException이 발생해야 한다") {
             shouldThrow<AlreadyReservedSeatException> {
-                concertService.reserveSeat(command)
+                reserveSeatService.execute(command)
             }
         }
     }
@@ -76,7 +63,7 @@ class ConcertServiceTest : BehaviorSpec({
         } returns seat
 
         When("reserveSeat를 호출하면") {
-            concertService.reserveSeat(command)
+            reserveSeatService.execute(command)
 
             Then("seat.reserve(accountId)가 호출된다") {
                 verify(exactly = 1) { seat.reserve(command.accountId) }

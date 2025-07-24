@@ -1,4 +1,8 @@
-package kr.hhplus.be.server.application.concert.model
+package kr.hhplus.be.server.application.concert
+
+interface ReserveSeatUseCase {
+    fun execute(command: SeatReservationCommand)
+}
 
 data class SeatReservationCommand(
     val accountId: String,
