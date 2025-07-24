@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 interface QueueRepository {
     fun assignQueueNumber(accountId: String): Long?
     fun incrementEntranceNumber(amount: Long)
+    fun getQueueNumber(accountId: String): Long?
+    fun getCurrentEntranceNumber(): Long
 }

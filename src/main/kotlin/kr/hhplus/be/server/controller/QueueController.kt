@@ -20,7 +20,8 @@ class QueueController(private val queueService: QueueService) {
     @GetMapping("/status")
     fun getStatus(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
+        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
     ): ResponseEntity<QueueStatusDetailResponse> {
-        return ResponseEntity.ok(QueueStatusDetailResponse.mockResponse)
+        return ResponseEntity.ok(QueueStatusDetailResponse.from(queueService.getStatus(queueTokenId)))
     }
 }

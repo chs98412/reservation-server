@@ -1,15 +1,17 @@
 package kr.hhplus.be.server.controller.model.response
 
+import kr.hhplus.be.server.application.model.QueueStatusSummary
+
 data class QueueStatusDetailResponse(
     val queueNumber: Long,
-    val estimatedWaitSeconds: Long,
-    val status: String, //TODO 추후 Enum으로 수정 필요
+    val isAllowedToEnter: Boolean,
+    val estimateWaitTime: Long,
 ) {
     companion object {
-        val mockResponse = QueueStatusDetailResponse(
-            queueNumber = 100,
-            estimatedWaitSeconds = 1000,
-            status = "WAITING"
+        fun from(summary: QueueStatusSummary) = QueueStatusDetailResponse(
+            queueNumber = summary.queueNumber,
+            isAllowedToEnter = summary.isAllowedToEnter,
+            estimateWaitTime = summary.estimateWaitTime,
         )
     }
 }
