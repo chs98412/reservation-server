@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.controller
+package kr.hhplus.be.server.presentation
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document
 import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
@@ -8,10 +8,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
-import kr.hhplus.be.server.application.point.PayService
-import kr.hhplus.be.server.application.point.model.BalanceFetchSummary
-import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
-import kr.hhplus.be.server.controller.model.request.PaymentRequest
+import kr.hhplus.be.server.application.point.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -39,7 +36,13 @@ import org.springframework.web.context.WebApplicationContext
 @TestConfiguration
 class PointMockConfig {
     @Bean
-    fun payService(): PayService = mockk(relaxed = true)
+    fun chargePointUseCase(): ChargePointUseCase = mockk(relaxed = true)
+
+    @Bean
+    fun getBalanceUseCase(): GetBalanceUseCase = mockk(relaxed = true)
+
+    @Bean
+    fun processPaymentUseCase(): ProcessPaymentUseCase = mockk(relaxed = true)
 }
 
 @ExtendWith(RestDocumentationExtension::class)
@@ -54,7 +57,13 @@ class PayControllerTest {
     private val objectMapper = jacksonObjectMapper()
 
     @Autowired
-    lateinit var payService: PayService
+    lateinit var chargePointUseCase: ChargePointUseCase
+
+    @Autowired
+    lateinit var getBalanceUseCase: GetBalanceUseCase
+
+    @Autowired
+    lateinit var processPaymentUseCase: ProcessPaymentUseCase
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
@@ -70,7 +79,7 @@ class PayControllerTest {
         val request = BalanceChargeRequest(amount = 10000)
         val json = objectMapper.writeValueAsString(request)
 
-        justRun { payService.charge(any(), any()) }
+        justRun { chargePointUseCase.execute(any(), any()) }
         mockMvc.perform(
             post("/point/charge")
                 .header("X-ACCOUNT-ID", "account123")
@@ -99,8 +108,8 @@ class PayControllerTest {
 
     @Test
     fun `잔액 조회 API`() {
-        val summary = BalanceFetchSummary(100L)
-        every { payService.getBalance(any()) } returns summary
+        val summary = BalanceFetchResponse(100L)
+        every { getBalanceUseCase.execute(any()) } returns summary
 
         mockMvc.perform(
             get("/point")
@@ -135,7 +144,7 @@ class PayControllerTest {
             reservationId = 1,
         )
 
-        justRun { payService.processPayment(any()) }
+        justRun { processPaymentUseCase.execute(any()) }
         val json = jacksonObjectMapper().writeValueAsString(request)
 
         mockMvc.perform(

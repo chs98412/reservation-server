@@ -1,15 +1,15 @@
-package kr.hhplus.be.server.controller
+package kr.hhplus.be.server.presentation
 
-import kr.hhplus.be.server.application.point.PayService
-import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
-import kr.hhplus.be.server.controller.model.response.BalanceDetailResponse
+import kr.hhplus.be.server.application.point.*
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/point")
 class PayController(
-    private val payService: PayService,
+    private val chargePointUseCase: ChargePointUseCase,
+    private val getBalanceUseCase: GetBalanceUseCase,
+    private val processPaymentUseCase: ProcessPaymentUseCase,
 ) {
 
     @PostMapping("/charge")
@@ -17,22 +17,22 @@ class PayController(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
         @RequestBody request: BalanceChargeRequest
     ): ResponseEntity<Void> {
-        payService.charge(accountId, request.amount)
+        chargePointUseCase.execute(accountId, request.amount)
         return ResponseEntity.noContent().build()
     }
 
     @GetMapping
     fun getBalance(
         @RequestHeader("X-ACCOUNT-ID") accountId: String
-    ): ResponseEntity<BalanceDetailResponse> {
-        return ResponseEntity.ok(payService.getBalance(accountId).let(BalanceDetailResponse::from))
+    ): ResponseEntity<BalanceFetchResponse> {
+        return ResponseEntity.ok(getBalanceUseCase.execute(accountId))
     }
 
     @PostMapping("/payment")
     fun processPayment(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
     ): ResponseEntity<Void> {
-        payService.processPayment(accountId)
+        processPaymentUseCase.execute(accountId)
         return ResponseEntity.noContent().build()
     }
 }

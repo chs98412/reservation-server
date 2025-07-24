@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.controller
+package kr.hhplus.be.server.presentation
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document
 import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
@@ -12,7 +12,6 @@ import io.mockk.mockk
 import kr.hhplus.be.server.application.concert.*
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.application.queue.QueueStatusResponse
-import kr.hhplus.be.server.presentation.ConcertController
 import kr.hhplus.be.server.presentation.model.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
