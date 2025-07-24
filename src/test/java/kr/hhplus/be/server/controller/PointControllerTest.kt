@@ -5,9 +5,11 @@ import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
 import kr.hhplus.be.server.application.point.BalanceService
+import kr.hhplus.be.server.application.point.model.BalanceFetchSummary
 import kr.hhplus.be.server.controller.model.request.BalanceChargeRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,6 +25,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.snippet.Attributes
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -93,6 +96,9 @@ class PointControllerTest {
 
     @Test
     fun `잔액 조회 API`() {
+        val summary = BalanceFetchSummary(100L)
+        every { balanceService.getBalance(any()) } returns summary
+
         mockMvc.perform(
             get("/point")
                 .header("X-ACCOUNT-ID", "account123")
@@ -110,6 +116,9 @@ class PointControllerTest {
                             )
                             .responseFields(
                                 fieldWithPath("balance").type(JsonFieldType.NUMBER).description("현재 잔액")
+                                    .attributes(
+                                        Attributes.key("point").value(summary.point)
+                                    ),
                             )
                             .build()
                     )

@@ -26,7 +26,7 @@ class PointController(
     fun getBalance(
         @RequestHeader("X-ACCOUNT-ID") accountId: String
     ): ResponseEntity<BalanceDetailResponse> {
-        return ResponseEntity.ok(BalanceDetailResponse.mockResponse)
+        return ResponseEntity.ok(balanceService.getBalance(accountId).let(BalanceDetailResponse::from))
     }
 
     @PostMapping("/payment")
