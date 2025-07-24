@@ -6,10 +6,6 @@ interface GetBalanceUseCase {
     fun execute(accountId: String): BalanceFetchResponse
 }
 
-data class PaymentRequest(
-    val reservationId: Int,
-)
-
 data class BalanceFetchResponse(
     val point: Long,
 ) {

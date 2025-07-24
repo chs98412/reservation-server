@@ -140,18 +140,12 @@ class PayControllerTest {
 
     @Test
     fun `결제 처리 API`() {
-        val request = PaymentRequest(
-            reservationId = 1,
-        )
-
         justRun { processPaymentUseCase.execute(any()) }
-        val json = jacksonObjectMapper().writeValueAsString(request)
 
         mockMvc.perform(
             post("/point/payment")
                 .header("X-ACCOUNT-ID", "account123")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
         )
             .andExpect(status().isNoContent)
             .andDo(
