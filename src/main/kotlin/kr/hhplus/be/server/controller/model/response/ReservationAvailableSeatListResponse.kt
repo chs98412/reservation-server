@@ -1,11 +1,13 @@
 package kr.hhplus.be.server.controller.model.response
 
+import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
+
 data class ReservationAvailableSeatListResponse(
-    val availableSeats: List<Int>
+    val availableConcertIdList: List<Long>
 ) {
     companion object {
-        val mockResponse = ReservationAvailableSeatListResponse(
-            availableSeats = listOf(1, 2, 3)
+        fun from(summary: AvailableConcertReservationFetchSummary) = ReservationAvailableSeatListResponse(
+            availableConcertIdList = summary.availableConcertIdList
         )
     }
 }

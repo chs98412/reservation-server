@@ -844,11 +844,11 @@ ul.nav-tabs {
   <script>
     // Script section to load models into a JS Var
     var defs = {}
-    defs["point921688622"] = {
-  "required" : [ "balance" ],
+    defs["point-939405386"] = {
+  "required" : [ "point" ],
   "type" : "object",
   "properties" : {
-    "balance" : {
+    "point" : {
       "type" : "number",
       "description" : "현재 잔액"
     }
@@ -874,53 +874,49 @@ ul.nav-tabs {
     }
   }
 };
-    defs["queue-status390315021"] = {
-  "required" : [ "estimatedWaitSeconds", "queueNumber", "status" ],
+    defs["queue-status-212558563"] = {
+  "required" : [ "estimateWaitTime", "isAllowedToEnter", "queueNumber" ],
   "type" : "object",
   "properties" : {
-    "estimatedWaitSeconds" : {
-      "type" : "number",
-      "description" : "예상 대기 시간"
+    "isAllowedToEnter" : {
+      "type" : "boolean",
+      "description" : "입장 가능 여부"
     },
     "queueNumber" : {
       "type" : "number",
       "description" : "대기 번호"
     },
-    "status" : {
-      "type" : "string",
-      "description" : "대기 상태"
+    "estimateWaitTime" : {
+      "type" : "number",
+      "description" : "예상 대기시간"
     }
   }
 };
-    defs["queue-token-1001903413"] = {
-  "required" : [ "createdAt", "estimatedWaitSeconds", "queueNumber", "tokenId" ],
+    defs["queue-token-2039335890"] = {
+  "required" : [ "token" ],
   "type" : "object",
   "properties" : {
-    "createdAt" : {
+    "token" : {
       "type" : "string",
-      "description" : "생성일시"
-    },
-    "estimatedWaitSeconds" : {
-      "type" : "number",
-      "description" : "예상 대기 시간"
-    },
-    "tokenId" : {
-      "type" : "string",
-      "description" : "토큰 ID"
-    },
-    "queueNumber" : {
-      "type" : "number",
-      "description" : "대기 번호"
+      "description" : "토큰 정보"
     }
   }
 };
-    defs["reservation-171495653"] = {
-  "required" : [ "seatId" ],
+    defs["reservation-2012456086"] = {
+  "required" : [ "concertId", "scheduleId", "seatNo" ],
   "type" : "object",
   "properties" : {
-    "seatId" : {
+    "concertId" : {
+      "type" : "string",
+      "description" : "콘서트 ID"
+    },
+    "seatNo" : {
       "type" : "number",
       "description" : "예약할 좌석 번호"
+    },
+    "scheduleId" : {
+      "type" : "number",
+      "description" : "공연 회차 ID"
     }
   }
 };
@@ -932,12 +928,25 @@ ul.nav-tabs {
       "type" : "array",
       "description" : "예약 가능 날짜 목록",
       "items" : {
-        "$ref" : "#/components/schemas/reservation_available_dates947196616_availableDates_inner"
+        "$ref" : "#/components/schemas/reservation_available_seats945977723_availableConcertIdList_inner"
       }
     }
   }
 };
-    defs["reservation_available_dates947196616_availableDates_inner"] = {
+    defs["reservation-available-seats945977723"] = {
+  "required" : [ "availableConcertIdList" ],
+  "type" : "object",
+  "properties" : {
+    "availableConcertIdList" : {
+      "type" : "array",
+      "description" : "예약 가능 좌석 목록",
+      "items" : {
+        "$ref" : "#/components/schemas/reservation_available_seats945977723_availableConcertIdList_inner"
+      }
+    }
+  }
+};
+    defs["reservation_available_seats945977723_availableConcertIdList_inner"] = {
   "oneOf" : [ {
     "type" : "object"
   }, {
@@ -947,19 +956,6 @@ ul.nav-tabs {
   }, {
     "type" : "number"
   } ]
-};
-    defs["reservation-available-seats-1320903909"] = {
-  "required" : [ "availableSeats" ],
-  "type" : "object",
-  "properties" : {
-    "availableSeats" : {
-      "type" : "array",
-      "description" : "예약 가능 좌석 목록",
-      "items" : {
-        "$ref" : "#/components/schemas/reservation_available_dates947196616_availableDates_inner"
-      }
-    }
-  }
 };
 
     var errs = {};
@@ -1455,7 +1451,7 @@ public class PointApiExample {
         String xACCOUNTID = account123; // String | 사용자 식별 ID
 
         try {
-            point921688622 result = apiInstance.getBalance(xACCOUNTID);
+            point-939405386 result = apiInstance.getBalance(xACCOUNTID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PointApi#getBalance");
@@ -1492,7 +1488,7 @@ public class PointApiExample {
         String xACCOUNTID = account123; // String | 사용자 식별 ID
 
         try {
-            point921688622 result = apiInstance.getBalance(xACCOUNTID);
+            point-939405386 result = apiInstance.getBalance(xACCOUNTID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PointApi#getBalance");
@@ -1514,7 +1510,7 @@ String *xACCOUNTID = account123; // 사용자 식별 ID (default to null)
 
 // 잔액 조회 API
 [apiInstance getBalanceWith:xACCOUNTID
-              completionHandler: ^(point921688622 output, NSError* error) {
+              completionHandler: ^(point-939405386 output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -1566,7 +1562,7 @@ namespace Example
 
             try {
                 // 잔액 조회 API
-                point921688622 result = apiInstance.getBalance(xACCOUNTID);
+                point-939405386 result = apiInstance.getBalance(xACCOUNTID);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling PointApi.getBalance: " + e.Message );
@@ -2183,7 +2179,7 @@ public class QueueApiExample {
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
 
         try {
-            queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+            queue-token-2039335890 result = apiInstance.createQueueToken(xACCOUNTID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling QueueApi#createQueueToken");
@@ -2220,7 +2216,7 @@ public class QueueApiExample {
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
 
         try {
-            queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+            queue-token-2039335890 result = apiInstance.createQueueToken(xACCOUNTID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling QueueApi#createQueueToken");
@@ -2242,7 +2238,7 @@ String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
 
 // 대기열 토큰 발급
 [apiInstance createQueueTokenWith:xACCOUNTID
-              completionHandler: ^(queue-token-1001903413 output, NSError* error) {
+              completionHandler: ^(queue-token-2039335890 output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -2294,7 +2290,7 @@ namespace Example
 
             try {
                 // 대기열 토큰 발급
-                queue-token-1001903413 result = apiInstance.createQueueToken(xACCOUNTID);
+                queue-token-2039335890 result = apiInstance.createQueueToken(xACCOUNTID);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling QueueApi.createQueueToken: " + e.Message );
@@ -2536,9 +2532,10 @@ public class QueueApiExample {
         // Create an instance of the API class
         QueueApi apiInstance = new QueueApi();
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = queue-token; // String | 대기열 토큰 헤더
 
         try {
-            queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+            queue-status-212558563 result = apiInstance.getQueueStatus(xACCOUNTID, xQUEUETOKENID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling QueueApi#getQueueStatus");
@@ -2555,9 +2552,10 @@ public class QueueApiExample {
 final api_instance = DefaultApi();
 
 final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
+final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
 
 try {
-    final result = await api_instance.getQueueStatus(xACCOUNTID);
+    final result = await api_instance.getQueueStatus(xACCOUNTID, xQUEUETOKENID);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getQueueStatus: $e\n');
@@ -2573,9 +2571,10 @@ public class QueueApiExample {
     public static void main(String[] args) {
         QueueApi apiInstance = new QueueApi();
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
+        String xQUEUETOKENID = queue-token; // String | 대기열 토큰 헤더
 
         try {
-            queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+            queue-status-212558563 result = apiInstance.getQueueStatus(xACCOUNTID, xQUEUETOKENID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling QueueApi#getQueueStatus");
@@ -2594,10 +2593,12 @@ public class QueueApiExample {
 // Create an instance of the API class
 QueueApi *apiInstance = [[QueueApi alloc] init];
 String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
+String *xQUEUETOKENID = queue-token; // 대기열 토큰 헤더 (default to null)
 
 // 대기열 대기번호 조회
 [apiInstance getQueueStatusWith:xACCOUNTID
-              completionHandler: ^(queue-status390315021 output, NSError* error) {
+    xQUEUETOKENID:xQUEUETOKENID
+              completionHandler: ^(queue-status-212558563 output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -2614,6 +2615,7 @@ String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
 // Create an instance of the API class
 var api = new ApiDocumentation.QueueApi()
 var xACCOUNTID = account123; // {String} 사용자 식별 헤더
+var xQUEUETOKENID = queue-token; // {String} 대기열 토큰 헤더
 
 var callback = function(error, data, response) {
   if (error) {
@@ -2622,7 +2624,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.getQueueStatus(xACCOUNTID, callback);
+api.getQueueStatus(xACCOUNTID, xQUEUETOKENID, callback);
 </code></pre>
                             </div>
 
@@ -2646,10 +2648,11 @@ namespace Example
             // Create an instance of the API class
             var apiInstance = new QueueApi();
             var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
+            var xQUEUETOKENID = queue-token;  // String | 대기열 토큰 헤더 (default to null)
 
             try {
                 // 대기열 대기번호 조회
-                queue-status390315021 result = apiInstance.getQueueStatus(xACCOUNTID);
+                queue-status-212558563 result = apiInstance.getQueueStatus(xACCOUNTID, xQUEUETOKENID);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling QueueApi.getQueueStatus: " + e.Message );
@@ -2667,9 +2670,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\QueueApi();
 $xACCOUNTID = account123; // String | 사용자 식별 헤더
+$xQUEUETOKENID = queue-token; // String | 대기열 토큰 헤더
 
 try {
-    $result = $api_instance->getQueueStatus($xACCOUNTID);
+    $result = $api_instance->getQueueStatus($xACCOUNTID, $xQUEUETOKENID);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling QueueApi->getQueueStatus: ', $e->getMessage(), PHP_EOL;
@@ -2685,9 +2689,10 @@ use WWW::OPenAPIClient::QueueApi;
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::QueueApi->new();
 my $xACCOUNTID = account123; # String | 사용자 식별 헤더
+my $xQUEUETOKENID = queue-token; # String | 대기열 토큰 헤더
 
 eval {
-    my $result = $api_instance->getQueueStatus(xACCOUNTID => $xACCOUNTID);
+    my $result = $api_instance->getQueueStatus(xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID);
     print Dumper($result);
 };
 if ($@) {
@@ -2705,10 +2710,11 @@ from pprint import pprint
 # Create an instance of the API class
 api_instance = openapi_client.QueueApi()
 xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
+xQUEUETOKENID = queue-token # String | 대기열 토큰 헤더 (default to null)
 
 try:
     # 대기열 대기번호 조회
-    api_response = api_instance.get_queue_status(xACCOUNTID)
+    api_response = api_instance.get_queue_status(xACCOUNTID, xQUEUETOKENID)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling QueueApi->getQueueStatus: %s\n" % e)</code></pre>
@@ -2719,9 +2725,10 @@ except ApiException as e:
 
 pub fn main() {
     let xACCOUNTID = account123; // String
+    let xQUEUETOKENID = queue-token; // String
 
     let mut context = QueueApi::Context::default();
-    let result = client.getQueueStatus(xACCOUNTID, &context).wait();
+    let result = client.getQueueStatus(xACCOUNTID, xQUEUETOKENID, &context).wait();
 
     println!("{:?}", result);
 }
@@ -2756,6 +2763,29 @@ pub fn main() {
 
                     <div class="inner description marked">
 사용자 식별 헤더
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                  <tr><td style="width:150px;">X-QUEUE-TOKEN-ID*</td>
+<td>
+
+
+    <div id="d2e199_getQueueStatus_xQUEUETOKENID">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+대기열 토큰 헤더
                     </div>
             </div>
                 <div class="inner required">
@@ -3306,7 +3336,7 @@ pub fn main() {
                           <div class="tab-pane active" id="examples-Reservation-getAvailableSeats-0-curl">
                             <pre class="prettyprint"><code class="language-bsh">curl -X GET \
  -H "Accept: application/json" \
- "http://localhost/reservation/available-seats?date=date_example"
+ "http://localhost/reservation/available-seats?date=date_example&concert-id=concertId_example"
 </code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reservation-getAvailableSeats-0-java">
@@ -3324,11 +3354,12 @@ public class ReservationApiExample {
         // Create an instance of the API class
         ReservationApi apiInstance = new ReservationApi();
         String date = date_example; // String | 검색 일자
+        String concertId = concertId_example; // String | 콘서트 식별자
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
         String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
 
         try {
-            reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+            reservation-available-seats945977723 result = apiInstance.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReservationApi#getAvailableSeats");
@@ -3345,11 +3376,12 @@ public class ReservationApiExample {
 final api_instance = DefaultApi();
 
 final String date = new String(); // String | 검색 일자
+final String concertId = new String(); // String | 콘서트 식별자
 final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
 final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
 
 try {
-    final result = await api_instance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+    final result = await api_instance.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->getAvailableSeats: $e\n');
@@ -3365,11 +3397,12 @@ public class ReservationApiExample {
     public static void main(String[] args) {
         ReservationApi apiInstance = new ReservationApi();
         String date = date_example; // String | 검색 일자
+        String concertId = concertId_example; // String | 콘서트 식별자
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
         String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
 
         try {
-            reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+            reservation-available-seats945977723 result = apiInstance.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReservationApi#getAvailableSeats");
@@ -3388,14 +3421,16 @@ public class ReservationApiExample {
 // Create an instance of the API class
 ReservationApi *apiInstance = [[ReservationApi alloc] init];
 String *date = date_example; // 검색 일자 (default to null)
+String *concertId = concertId_example; // 콘서트 식별자 (default to null)
 String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
 String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토큰 헤더 (default to null)
 
 // 예약 가능 좌석 조회
 [apiInstance getAvailableSeatsWith:date
+    concertId:concertId
     xACCOUNTID:xACCOUNTID
     xQUEUETOKENID:xQUEUETOKENID
-              completionHandler: ^(reservation-available-seats-1320903909 output, NSError* error) {
+              completionHandler: ^(reservation-available-seats945977723 output, NSError* error) {
     if (output) {
         NSLog(@"%@", output);
     }
@@ -3412,6 +3447,7 @@ String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토�
 // Create an instance of the API class
 var api = new ApiDocumentation.ReservationApi()
 var date = date_example; // {String} 검색 일자
+var concertId = concertId_example; // {String} 콘서트 식별자
 var xACCOUNTID = account123; // {String} 사용자 식별 헤더
 var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // {String} 대기열 토큰 헤더
 
@@ -3422,7 +3458,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID, callback);
+api.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID, callback);
 </code></pre>
                             </div>
 
@@ -3446,12 +3482,13 @@ namespace Example
             // Create an instance of the API class
             var apiInstance = new ReservationApi();
             var date = date_example;  // String | 검색 일자 (default to null)
+            var concertId = concertId_example;  // String | 콘서트 식별자 (default to null)
             var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
             var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24;  // String | 대기열 토큰 헤더 (default to null)
 
             try {
                 // 예약 가능 좌석 조회
-                reservation-available-seats-1320903909 result = apiInstance.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID);
+                reservation-available-seats945977723 result = apiInstance.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID);
                 Debug.WriteLine(result);
             } catch (Exception e) {
                 Debug.Print("Exception when calling ReservationApi.getAvailableSeats: " + e.Message );
@@ -3469,11 +3506,12 @@ require_once(__DIR__ . '/vendor/autoload.php');
 // Create an instance of the API class
 $api_instance = new OpenAPITools\Client\Api\ReservationApi();
 $date = date_example; // String | 검색 일자
+$concertId = concertId_example; // String | 콘서트 식별자
 $xACCOUNTID = account123; // String | 사용자 식별 헤더
 $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
 
 try {
-    $result = $api_instance->getAvailableSeats($date, $xACCOUNTID, $xQUEUETOKENID);
+    $result = $api_instance->getAvailableSeats($date, $concertId, $xACCOUNTID, $xQUEUETOKENID);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReservationApi->getAvailableSeats: ', $e->getMessage(), PHP_EOL;
@@ -3489,11 +3527,12 @@ use WWW::OPenAPIClient::ReservationApi;
 # Create an instance of the API class
 my $api_instance = WWW::OPenAPIClient::ReservationApi->new();
 my $date = date_example; # String | 검색 일자
+my $concertId = concertId_example; # String | 콘서트 식별자
 my $xACCOUNTID = account123; # String | 사용자 식별 헤더
 my $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; # String | 대기열 토큰 헤더
 
 eval {
-    my $result = $api_instance->getAvailableSeats(date => $date, xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID);
+    my $result = $api_instance->getAvailableSeats(date => $date, concertId => $concertId, xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID);
     print Dumper($result);
 };
 if ($@) {
@@ -3511,12 +3550,13 @@ from pprint import pprint
 # Create an instance of the API class
 api_instance = openapi_client.ReservationApi()
 date = date_example # String | 검색 일자 (default to null)
+concertId = concertId_example # String | 콘서트 식별자 (default to null)
 xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
 xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24 # String | 대기열 토큰 헤더 (default to null)
 
 try:
     # 예약 가능 좌석 조회
-    api_response = api_instance.get_available_seats(date, xACCOUNTID, xQUEUETOKENID)
+    api_response = api_instance.get_available_seats(date, concertId, xACCOUNTID, xQUEUETOKENID)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReservationApi->getAvailableSeats: %s\n" % e)</code></pre>
@@ -3527,11 +3567,12 @@ except ApiException as e:
 
 pub fn main() {
     let date = date_example; // String
+    let concertId = concertId_example; // String
     let xACCOUNTID = account123; // String
     let xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String
 
     let mut context = ReservationApi::Context::default();
-    let result = client.getAvailableSeats(date, xACCOUNTID, xQUEUETOKENID, &context).wait();
+    let result = client.getAvailableSeats(date, concertId, xACCOUNTID, xQUEUETOKENID, &context).wait();
 
     println!("{:?}", result);
 }
@@ -3622,6 +3663,29 @@ pub fn main() {
 
                     <div class="inner description marked">
 검색 일자
+                    </div>
+            </div>
+                <div class="inner required">
+                    Required
+                </div>
+        </div>
+    </div>
+</td>
+</tr>
+
+                                <tr><td style="width:150px;">concert-id*</td>
+<td>
+
+
+    <div id="d2e199_getAvailableSeats_concertId">
+        <div class="json-schema-view">
+            <div class="primitive">
+                <span class="type">
+                    String
+                </span>
+
+                    <div class="inner description marked">
+콘서트 식별자
                     </div>
             </div>
                 <div class="inner required">
@@ -3756,10 +3820,10 @@ public class ReservationApiExample {
         ReservationApi apiInstance = new ReservationApi();
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
         String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
-        Reservation171495653 reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+        Reservation2012456086 reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1}; // Reservation2012456086 | 
 
         try {
-            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation2012456086);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReservationApi#reserveSeat");
             e.printStackTrace();
@@ -3776,10 +3840,10 @@ final api_instance = DefaultApi();
 
 final String xACCOUNTID = new String(); // String | 사용자 식별 헤더
 final String xQUEUETOKENID = new String(); // String | 대기열 토큰 헤더
-final Reservation171495653 reservation171495653 = new Reservation171495653(); // Reservation171495653 | 
+final Reservation2012456086 reservation2012456086 = new Reservation2012456086(); // Reservation2012456086 | 
 
 try {
-    final result = await api_instance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+    final result = await api_instance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation2012456086);
     print(result);
 } catch (e) {
     print('Exception when calling DefaultApi->reserveSeat: $e\n');
@@ -3796,10 +3860,10 @@ public class ReservationApiExample {
         ReservationApi apiInstance = new ReservationApi();
         String xACCOUNTID = account123; // String | 사용자 식별 헤더
         String xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
-        Reservation171495653 reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+        Reservation2012456086 reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1}; // Reservation2012456086 | 
 
         try {
-            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+            apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation2012456086);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReservationApi#reserveSeat");
             e.printStackTrace();
@@ -3818,12 +3882,12 @@ public class ReservationApiExample {
 ReservationApi *apiInstance = [[ReservationApi alloc] init];
 String *xACCOUNTID = account123; // 사용자 식별 헤더 (default to null)
 String *xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // 대기열 토큰 헤더 (default to null)
-Reservation171495653 *reservation171495653 = {"seatId":1}; //  (optional)
+Reservation2012456086 *reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1}; //  (optional)
 
 // 좌석 예약 요청
 [apiInstance reserveSeatWith:xACCOUNTID
     xQUEUETOKENID:xQUEUETOKENID
-    reservation171495653:reservation171495653
+    reservation2012456086:reservation2012456086
               completionHandler: ^(NSError* error) {
     if (error) {
         NSLog(@"Error: %@", error);
@@ -3840,7 +3904,7 @@ var api = new ApiDocumentation.ReservationApi()
 var xACCOUNTID = account123; // {String} 사용자 식별 헤더
 var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // {String} 대기열 토큰 헤더
 var opts = {
-  'reservation171495653': {"seatId":1} // {Reservation171495653} 
+  'reservation2012456086': {"concertId":"concert-id","scheduleId":1,"seatNo":1} // {Reservation2012456086} 
 };
 
 var callback = function(error, data, response) {
@@ -3875,11 +3939,11 @@ namespace Example
             var apiInstance = new ReservationApi();
             var xACCOUNTID = account123;  // String | 사용자 식별 헤더 (default to null)
             var xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24;  // String | 대기열 토큰 헤더 (default to null)
-            var reservation171495653 = new Reservation171495653(); // Reservation171495653 |  (optional) 
+            var reservation2012456086 = new Reservation2012456086(); // Reservation2012456086 |  (optional) 
 
             try {
                 // 좌석 예약 요청
-                apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653);
+                apiInstance.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation2012456086);
             } catch (Exception e) {
                 Debug.Print("Exception when calling ReservationApi.reserveSeat: " + e.Message );
             }
@@ -3897,10 +3961,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 $api_instance = new OpenAPITools\Client\Api\ReservationApi();
 $xACCOUNTID = account123; // String | 사용자 식별 헤더
 $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String | 대기열 토큰 헤더
-$reservation171495653 = {"seatId":1}; // Reservation171495653 | 
+$reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1}; // Reservation2012456086 | 
 
 try {
-    $api_instance->reserveSeat($xACCOUNTID, $xQUEUETOKENID, $reservation171495653);
+    $api_instance->reserveSeat($xACCOUNTID, $xQUEUETOKENID, $reservation2012456086);
 } catch (Exception $e) {
     echo 'Exception when calling ReservationApi->reserveSeat: ', $e->getMessage(), PHP_EOL;
 }
@@ -3916,10 +3980,10 @@ use WWW::OPenAPIClient::ReservationApi;
 my $api_instance = WWW::OPenAPIClient::ReservationApi->new();
 my $xACCOUNTID = account123; # String | 사용자 식별 헤더
 my $xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; # String | 대기열 토큰 헤더
-my $reservation171495653 = WWW::OPenAPIClient::Object::Reservation171495653->new(); # Reservation171495653 | 
+my $reservation2012456086 = WWW::OPenAPIClient::Object::Reservation2012456086->new(); # Reservation2012456086 | 
 
 eval {
-    $api_instance->reserveSeat(xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID, reservation171495653 => $reservation171495653);
+    $api_instance->reserveSeat(xACCOUNTID => $xACCOUNTID, xQUEUETOKENID => $xQUEUETOKENID, reservation2012456086 => $reservation2012456086);
 };
 if ($@) {
     warn "Exception when calling ReservationApi->reserveSeat: $@\n";
@@ -3937,11 +4001,11 @@ from pprint import pprint
 api_instance = openapi_client.ReservationApi()
 xACCOUNTID = account123 # String | 사용자 식별 헤더 (default to null)
 xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24 # String | 대기열 토큰 헤더 (default to null)
-reservation171495653 = {"seatId":1} # Reservation171495653 |  (optional)
+reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1} # Reservation2012456086 |  (optional)
 
 try:
     # 좌석 예약 요청
-    api_instance.reserve_seat(xACCOUNTID, xQUEUETOKENID, reservation171495653=reservation171495653)
+    api_instance.reserve_seat(xACCOUNTID, xQUEUETOKENID, reservation2012456086=reservation2012456086)
 except ApiException as e:
     print("Exception when calling ReservationApi->reserveSeat: %s\n" % e)</code></pre>
                             </div>
@@ -3952,10 +4016,10 @@ except ApiException as e:
 pub fn main() {
     let xACCOUNTID = account123; // String
     let xQUEUETOKENID = bb7de087-2e5d-4b6c-b7c4-bb3b97360d24; // String
-    let reservation171495653 = {"seatId":1}; // Reservation171495653
+    let reservation2012456086 = {"concertId":"concert-id","scheduleId":1,"seatNo":1}; // Reservation2012456086
 
     let mut context = ReservationApi::Context::default();
-    let result = client.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation171495653, &context).wait();
+    let result = client.reserveSeat(xACCOUNTID, xQUEUETOKENID, reservation2012456086, &context).wait();
 
     println!("{:?}", result);
 }
@@ -4031,7 +4095,7 @@ pub fn main() {
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">reservation171495653 </td>
+                                <tr><td style="width:150px;">reservation2012456086 </td>
 <td>
 <p class="marked"></p>
 <script>
@@ -4040,11 +4104,11 @@ $(document).ready(function() {
   "content" : {
     "application/json" : {
       "schema" : {
-        "$ref" : "#/components/schemas/reservation-171495653"
+        "$ref" : "#/components/schemas/reservation-2012456086"
       },
       "examples" : {
         "reserve-seat" : {
-          "value" : "{\"seatId\":1}"
+          "value" : "{\"concertId\":\"concert-id\",\"scheduleId\":1,\"seatNo\":1}"
         }
       }
     }
@@ -4065,12 +4129,12 @@ $(document).ready(function() {
   }
 
   var view = new JSONSchemaView(schema,2,{isBodyParam: true});
-  var result = $('#d2e199_reserveSeat_reservation171495653');
+  var result = $('#d2e199_reserveSeat_reservation2012456086');
   result.empty();
   result.append(view.render());
 });
 </script>
-<div id="d2e199_reserveSeat_reservation171495653"></div>
+<div id="d2e199_reserveSeat_reservation2012456086"></div>
 </td>
 </tr>
 
