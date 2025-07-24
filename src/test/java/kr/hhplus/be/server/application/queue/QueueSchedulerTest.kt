@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application
+package kr.hhplus.be.server.application.queue
 
 import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.mockk

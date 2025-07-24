@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.application.point
 
-import kr.hhplus.be.server.NotFoundBalanceException
+import kr.hhplus.be.server.common.exception.NotFoundBalanceException
 import kr.hhplus.be.server.application.point.model.BalanceFetchSummary
 import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.point.BalanceRepository

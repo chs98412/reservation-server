@@ -9,4 +9,11 @@ interface ConcertRepository {
     fun findAllByConcertId(concertId: String): List<ConcertSchedule>
     fun findAllByConcertIdAndDateAndStatus(concertId: String, date: LocalDate, status: String): List<Reservation>
     fun findAllByUserIdAndStatus(userId: String, status: String): List<Reservation>
+    fun findByConcertIdAndScheduleIdAndSeatNo(
+        concertId: String,
+        scheduleId: Long,
+        seatNo: Int,
+    ): Reservation?
+
+    fun findAllByStatus(status: String): List<Reservation>
 }

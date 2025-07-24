@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.infrastructure
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kr.hhplus.be.server.InvalidQueueTokenException
-import kr.hhplus.be.server.application.QueueTokenSigner
+import kr.hhplus.be.server.common.exception.InvalidQueueTokenException
+import kr.hhplus.be.server.application.queue.QueueTokenSigner
 import kr.hhplus.be.server.domain.queue.QueueToken
 import org.springframework.stereotype.Component
 import java.util.*

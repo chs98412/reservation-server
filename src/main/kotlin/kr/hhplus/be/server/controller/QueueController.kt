@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.controller
 
-import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.queue.QueueService
 import kr.hhplus.be.server.controller.model.response.QueueStatusDetailResponse
 import kr.hhplus.be.server.controller.model.response.QueueTokenCreateResponse
 import org.springframework.http.ResponseEntity

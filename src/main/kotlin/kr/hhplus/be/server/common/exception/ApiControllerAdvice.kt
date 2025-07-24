@@ -1,4 +1,4 @@
-package kr.hhplus.be.server
+package kr.hhplus.be.server.common.exception
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

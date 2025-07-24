@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application
+package kr.hhplus.be.server.application.queue
 
 import kr.hhplus.be.server.domain.queue.QueueToken
 
