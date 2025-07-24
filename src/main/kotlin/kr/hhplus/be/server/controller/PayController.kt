@@ -25,8 +25,6 @@ class PayController(
     fun getBalance(
         @RequestHeader("X-ACCOUNT-ID") accountId: String
     ): ResponseEntity<BalanceDetailResponse> {
-        payService.getBalance(accountId)
-
         return ResponseEntity.ok(payService.getBalance(accountId).let(BalanceDetailResponse::from))
     }
 
