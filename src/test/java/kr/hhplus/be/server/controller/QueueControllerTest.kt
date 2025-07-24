@@ -41,7 +41,7 @@ class QueueMockConfig {
 
 @ExtendWith(RestDocumentationExtension::class)
 @Import(QueueMockConfig::class)
-@WebMvcTest
+@WebMvcTest(controllers = [QueueController::class])
 class QueueControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
@@ -121,7 +121,7 @@ class QueueControllerTest {
                                     .attributes(Attributes.key("queueNumber").value(summary.queueNumber)),
                                 fieldWithPath("isAllowedToEnter").type(JsonFieldType.BOOLEAN).description("입장 가능 여부")
                                     .attributes(Attributes.key("isAllowedToEnter").value(summary.isAllowedToEnter)),
-                                fieldWithPath("estimateWaitTime").type(JsonFieldType.NUMBER)
+                                fieldWithPath("estimateWaitTime").type(JsonFieldType.NUMBER).description("예상 대기시간")
                                     .attributes(Attributes.key("estimateWaitTime").value(summary.estimateWaitTime)),
                             )
                             .build()

@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -38,11 +39,12 @@ import org.springframework.web.context.WebApplicationContext
 @TestConfiguration
 class PointMockConfig {
     @Bean
-    fun balanceService(): PayService = mockk(relaxed = true)
+    fun payService(): PayService = mockk(relaxed = true)
 }
 
 @ExtendWith(RestDocumentationExtension::class)
-@WebMvcTest
+@WebMvcTest(controllers = [PayController::class])
+@Import(PointMockConfig::class)
 class PayControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
@@ -116,7 +118,7 @@ class PayControllerTest {
                                 headerWithName("X-ACCOUNT-ID").description("사용자 식별 ID")
                             )
                             .responseFields(
-                                fieldWithPath("balance").type(JsonFieldType.NUMBER).description("현재 잔액")
+                                fieldWithPath("point").type(JsonFieldType.NUMBER).description("현재 잔액")
                                     .attributes(
                                         Attributes.key("point").value(summary.point)
                                     ),
