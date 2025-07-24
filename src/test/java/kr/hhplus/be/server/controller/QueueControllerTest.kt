@@ -7,7 +7,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.queue.QueueService
 import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.application.model.QueueTokenSummary
 import org.junit.jupiter.api.BeforeEach

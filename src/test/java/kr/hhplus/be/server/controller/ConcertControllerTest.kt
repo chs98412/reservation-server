@@ -8,7 +8,7 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.application.queue.QueueService
 import kr.hhplus.be.server.application.concert.ConcertService
 import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
 import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary

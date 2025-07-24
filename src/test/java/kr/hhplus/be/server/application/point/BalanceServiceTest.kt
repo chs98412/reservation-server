@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kr.hhplus.be.server.NotFoundBalanceException
+import kr.hhplus.be.server.common.exception.NotFoundBalanceException
 import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.concert.Reservation
 import kr.hhplus.be.server.domain.point.Balance

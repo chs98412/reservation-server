@@ -1,7 +1,7 @@
-package kr.hhplus.be.server.application
+package kr.hhplus.be.server.application.queue
 
-import kr.hhplus.be.server.AlreadyAssignedQueueAccountException
-import kr.hhplus.be.server.QueueNotFoundException
+import kr.hhplus.be.server.common.exception.AlreadyAssignedQueueAccountException
+import kr.hhplus.be.server.common.exception.QueueNotFoundException
 import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.application.model.QueueTokenSummary
 import kr.hhplus.be.server.domain.queue.QueueRepository

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.concert
 
-import kr.hhplus.be.server.AlreadyReservedSeatException
-import kr.hhplus.be.server.NotFoundConcertException
+import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
+import kr.hhplus.be.server.common.exception.NotFoundConcertException
 import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
 import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
 import kr.hhplus.be.server.application.concert.model.SeatReservationCommand

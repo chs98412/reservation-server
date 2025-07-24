@@ -3,7 +3,7 @@ package kr.hhplus.be.server.domain.point
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.longs.shouldBeExactly
-import kr.hhplus.be.server.InsufficientBalanceException
+import kr.hhplus.be.server.common.exception.InsufficientBalanceException
 
 class BalanceTest : BehaviorSpec({
 

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.controller
 
-import kr.hhplus.be.server.InvalidQueueTokenException
-import kr.hhplus.be.server.application.QueueService
+import kr.hhplus.be.server.common.exception.InvalidQueueTokenException
+import kr.hhplus.be.server.application.queue.QueueService
 import kr.hhplus.be.server.application.concert.ConcertService
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import kr.hhplus.be.server.controller.model.response.ReservationAvailableDatesResponse

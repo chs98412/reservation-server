@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.application
+package kr.hhplus.be.server.application.queue
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
@@ -8,8 +8,8 @@ import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.AlreadyAssignedQueueAccountException
-import kr.hhplus.be.server.QueueNotFoundException
+import kr.hhplus.be.server.common.exception.AlreadyAssignedQueueAccountException
+import kr.hhplus.be.server.common.exception.QueueNotFoundException
 import kr.hhplus.be.server.domain.queue.QueueRepository
 import kr.hhplus.be.server.domain.queue.QueueToken
 import org.junit.jupiter.api.assertThrows

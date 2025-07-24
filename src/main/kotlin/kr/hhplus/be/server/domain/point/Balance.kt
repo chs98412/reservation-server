@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.point
 
-import kr.hhplus.be.server.InsufficientBalanceException
+import kr.hhplus.be.server.common.exception.InsufficientBalanceException
 
 class Balance(
     val accountId: Long,

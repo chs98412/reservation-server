@@ -1,4 +1,4 @@
-package kr.hhplus.be.server
+package kr.hhplus.be.server.common.exception
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus

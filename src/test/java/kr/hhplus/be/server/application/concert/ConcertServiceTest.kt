@@ -5,8 +5,8 @@ import io.kotest.core.spec.style.BehaviorSpec
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kr.hhplus.be.server.AlreadyReservedSeatException
-import kr.hhplus.be.server.NotFoundConcertException
+import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
+import kr.hhplus.be.server.common.exception.NotFoundConcertException
 import kr.hhplus.be.server.application.concert.model.SeatReservationCommand
 import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.concert.Reservation
