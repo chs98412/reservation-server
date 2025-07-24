@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.domain.point
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.longs.shouldBeExactly
+import kr.hhplus.be.server.InsufficientBalanceException
 
 class BalanceTest : BehaviorSpec({
 
@@ -21,6 +23,17 @@ class BalanceTest : BehaviorSpec({
 
             Then("잔액은 150원이 된다") {
                 balance.getAmount() shouldBeExactly 150L
+            }
+        }
+    }
+    Given("잔액이 부족한 Balance가 주어졌을 때") {
+        val balance = Balance(accountId = 2L)
+
+        When("100원을 차감하면") {
+            Then("InsufficientBalanceException이 발생해야 한다") {
+                shouldThrow<InsufficientBalanceException> {
+                    balance.deduct(100)
+                }
             }
         }
     }

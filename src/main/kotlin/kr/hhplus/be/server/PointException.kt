@@ -11,3 +11,8 @@ abstract class PointException(
 class NotFoundBalanceException(
     override val message: String = "계좌가 존재하지 않습니다.",
 ) : PointException(message)
+
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+class InsufficientBalanceException(
+    override val message: String = "잔액이 부족합니다."
+) : PointException(message)
