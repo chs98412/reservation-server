@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.queue
 
 interface CreateTokenUseCase {
-    fun execute(accountId: String): QueueTokenResponse
+    fun execute(accountId: String, concertId: Long): QueueTokenResponse
 }
 
 data class QueueTokenResponse(

@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 class QueueToken(
     val accountId: String,
+    val concertId: Long = 1,
     val queueNumber: Long,
     val createdAt: LocalDateTime,
 ) {

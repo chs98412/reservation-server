@@ -16,8 +16,9 @@ class QueueController(
     @PostMapping("/token")
     fun createToken(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
+        @RequestParam("concert-id") concertId: Long,
     ): ResponseEntity<QueueTokenResponse> {
-        return ResponseEntity.ok(createTokenUseCase.execute(accountId))
+        return ResponseEntity.ok(createTokenUseCase.execute(accountId, concertId))
     }
 
     @GetMapping("/status")
