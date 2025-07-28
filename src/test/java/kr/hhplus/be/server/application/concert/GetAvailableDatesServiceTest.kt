@@ -6,15 +6,18 @@ import io.mockk.every
 import io.mockk.mockk
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
 import kr.hhplus.be.server.domain.concert.ConcertRepository
+import kr.hhplus.be.server.domain.concert.ConcertScheduleRepository
+import org.springframework.data.repository.findByIdOrNull
 
 class GetAvailableDatesServiceTest : BehaviorSpec({
     val concertRepository = mockk<ConcertRepository>()
-    val getAvailableDatesService = GetAvailableDatesService(concertRepository)
+    val concertScheduleRepository = mockk<ConcertScheduleRepository>()
+    val getAvailableDatesService = GetAvailableDatesService(concertRepository, concertScheduleRepository)
     Given("예약 가능 날짜 조회에서") {
-        val concertId = "nonexistent-concert"
+        val concertId = 1L
 
         When("해당 concertId에 대한 콘서트가 존재하지 않으면") {
-            every { concertRepository.findByConcertId(concertId) } returns null
+            every { concertRepository.findByIdOrNull(concertId) } returns null
 
             Then("NotFoundConcertException이 발생해야 한다") {
                 shouldThrow<NotFoundConcertException> {

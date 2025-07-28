@@ -4,7 +4,7 @@ import kr.hhplus.be.server.domain.concert.Reservation
 import java.time.LocalDate
 
 interface GetAvailableSeatsUseCase {
-    fun execute(concertId: String, date: LocalDate): AvailableConcertReservationFetchResponse
+    fun execute(concertId: Long, date: LocalDate): AvailableConcertReservationFetchResponse
 }
 
 data class AvailableConcertReservationFetchResponse(

@@ -73,7 +73,7 @@ class QueueControllerTest {
     @Test
     fun `대기열 토큰 발급 API`() {
         val summary = QueueTokenResponse(token = "token")
-        every { createTokenUseCase.execute(any()) } returns QueueTokenResponse(token = "token")
+        every { createTokenUseCase.execute(any(), any()) } returns QueueTokenResponse(token = "token")
 
         mockMvc.perform(
             post("/queue/token")

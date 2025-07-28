@@ -1,25 +1,40 @@
 package kr.hhplus.be.server.domain.concert
 
+import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Entity
+@Table(name = "reservation")
 class Reservation(
-    val id: Long,
-    val concertId: String,
-    val scheduleId: Long,
-    val seatNo: Int,
-    val date: LocalDate,
-    accountId: String? = null,
-    status: String = "AVAILABLE",
-    val price: Long = 1000, //TODO 등급별로 변동 가능하도록 수정
-) {
-    var accountId: String? = accountId
-        private set
-    var status: String = status //TODO enum으로 변경
-        private set
-    var reservedAt: LocalDateTime? = null
-        private set
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
 
+    @Column(name = "concert_id", nullable = false)
+    val concertId: Long,
+
+    @Column(name = "schedule_id", nullable = false)
+    val scheduleId: Long,
+
+    @Column(name = "seat_no", nullable = false)
+    val seatNo: Int,
+
+    @Column(nullable = false)
+    val date: LocalDate,
+
+    @Column(name = "account_id")
+    var accountId: String? = null,
+
+    @Column(nullable = false)
+    var status: String = "AVAILABLE",
+
+    @Column(nullable = false)
+    val price: Long = 1000,
+
+    @Column(name = "reserved_at")
+    var reservedAt: LocalDateTime? = null,
+) {
     fun markAsReserved() {
         status = "RESERVED"
     }
@@ -34,8 +49,8 @@ class Reservation(
 
     fun reserve(accountId: String) {
         this.accountId = accountId
-        status = "RESERVED"
-        reservedAt = LocalDateTime.now()
+        this.status = "RESERVED"
+        this.reservedAt = LocalDateTime.now()
     }
 
     fun expireIfNeeded() {

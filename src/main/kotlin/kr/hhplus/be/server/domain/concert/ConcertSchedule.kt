@@ -1,10 +1,21 @@
 package kr.hhplus.be.server.domain.concert
 
+import jakarta.persistence.*
 import java.time.LocalDate
 
+@Entity
+@Table(name = "concert_schedule")
 class ConcertSchedule(
-    val id: Long,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @Column(name = "concert_id", nullable = false)
     val concertId: Long,
+
+    @Column(nullable = false)
     val date: LocalDate,
-    val totalSeats: Int = 50
+
+    @Column(name = "total_seats", nullable = false)
+    val totalSeats: Int = 50,
 )

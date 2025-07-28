@@ -1,15 +1,17 @@
 package kr.hhplus.be.server.application.concert
 
-import kr.hhplus.be.server.domain.concert.ConcertRepository
+import kr.hhplus.be.server.domain.concert.ReservationRepository
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ReservationCleanupScheduler(
-    private val concertRepository: ConcertRepository
+    private val reservationRepository: ReservationRepository,
 ) {
     @Scheduled(fixedRate = 60_000)
+    @Transactional
     fun releaseExpiredReservations() {
-        concertRepository.findAllByStatus("RESERVED").forEach { it.expireIfNeeded() }
+        reservationRepository.findAllByStatus("RESERVED").forEach { it.expireIfNeeded() }
     }
 }

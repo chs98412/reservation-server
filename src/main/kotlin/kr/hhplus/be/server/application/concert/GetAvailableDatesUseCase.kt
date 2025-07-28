@@ -4,7 +4,7 @@ import kr.hhplus.be.server.domain.concert.ConcertSchedule
 import java.time.LocalDate
 
 interface GetAvailableDatesUseCase {
-    fun execute(concertId: String): ReservationAvailableDatesResponse
+    fun execute(concertId: Long): ReservationAvailableDatesResponse
 }
 
 data class ReservationAvailableDatesResponse(

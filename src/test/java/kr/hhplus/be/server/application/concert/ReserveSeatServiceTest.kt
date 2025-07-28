@@ -7,15 +7,15 @@ import io.mockk.mockk
 import io.mockk.verify
 import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
-import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.concert.Reservation
+import kr.hhplus.be.server.domain.concert.ReservationRepository
 
 class ReserveSeatServiceTest : BehaviorSpec({
-    val concertRepository = mockk<ConcertRepository>()
-    val reserveSeatService = ReserveSeatService(concertRepository)
+    val reservationRepository = mockk<ReservationRepository>()
+    val reserveSeatService = ReserveSeatService(reservationRepository)
 
     val command = SeatReservationCommand(
-        concertId = "concert-1",
+        concertId = 1L,
         scheduleId = 1,
         seatNo = 1,
         accountId = "user-123"
@@ -23,7 +23,7 @@ class ReserveSeatServiceTest : BehaviorSpec({
 
     Given("예약 대상 좌석이 존재하지 않을 때") {
         every {
-            concertRepository.findByConcertIdAndScheduleIdAndSeatNo(
+            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
                 command.concertId, command.scheduleId, command.seatNo
             )
         } returns null
@@ -40,7 +40,7 @@ class ReserveSeatServiceTest : BehaviorSpec({
         every { reservedSeat.isUnAvailableToReserve() } returns true
 
         every {
-            concertRepository.findByConcertIdAndScheduleIdAndSeatNo(
+            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
                 command.concertId, command.scheduleId, command.seatNo
             )
         } returns reservedSeat
@@ -57,7 +57,7 @@ class ReserveSeatServiceTest : BehaviorSpec({
         every { seat.isUnAvailableToReserve() } returns false
 
         every {
-            concertRepository.findByConcertIdAndScheduleIdAndSeatNo(
+            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
                 command.concertId, command.scheduleId, command.seatNo
             )
         } returns seat
