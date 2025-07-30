@@ -18,7 +18,7 @@ class CreateTokenService(
     @Transactional
     override fun execute(accountId: String, concertId: Long): QueueTokenResponse {
 
-        if (participantRepository.existByAccountId(accountId)) {
+        if (participantRepository.existsByAccountId(accountId)) {
             throw AlreadyAssignedQueueAccountException()
         }
 

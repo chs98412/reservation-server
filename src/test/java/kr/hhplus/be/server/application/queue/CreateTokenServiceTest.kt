@@ -21,7 +21,7 @@ class CreateTokenServiceTest : BehaviorSpec({
     }
 
     Given("대기열 토큰 생성에서") {
-        every { participantRepository.existByAccountId(any()) } returns true
+        every { participantRepository.existsByAccountId(any()) } returns true
         When("이미 큐에 존재하는 유저가") {
             Then("AlreadyAssignedQueueAccountException이 발생한다") {
                 assertThrows<AlreadyAssignedQueueAccountException> { createTokenService.execute("account", 1) }

@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface QueueParticipantRepository : JpaRepository<QueueParticipant, Long> {
-    fun existByAccountId(accountId: String): Boolean
+    fun existsByAccountId(accountId: String): Boolean
     fun findByAccountId(accountId: String): QueueParticipant?
 }
