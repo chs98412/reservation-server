@@ -32,9 +32,9 @@ class GetStatusServiceTest : BehaviorSpec({
         every { queueTokenSigner.decode(any()) } returns decodedToken
         every { participantRepository.findByAccountId(any()) } returns QueueParticipant(
             accountId = "accountId",
-            queueNumber = queueNumber
+            queueNumber = queueNumber,
         )
-        every { queueStateRepository.findByConcertId(concertId = 1L) } returns QueueState()
+        every { queueStateRepository.findByConcertId(concertId = 1L) } returns QueueState(entranceNumber = 10L)
 
         When("getStatus를 호출하면") {
             val result = getStatusService.execute(tokenId)

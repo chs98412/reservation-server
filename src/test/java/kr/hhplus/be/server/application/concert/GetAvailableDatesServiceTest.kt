@@ -6,13 +6,13 @@ import io.mockk.every
 import io.mockk.mockk
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
 import kr.hhplus.be.server.domain.concert.ConcertRepository
-import kr.hhplus.be.server.domain.concert.ConcertScheduleRepository
+import kr.hhplus.be.server.domain.concert.ReservationRepository
 import org.springframework.data.repository.findByIdOrNull
 
 class GetAvailableDatesServiceTest : BehaviorSpec({
     val concertRepository = mockk<ConcertRepository>()
-    val concertScheduleRepository = mockk<ConcertScheduleRepository>()
-    val getAvailableDatesService = GetAvailableDatesService(concertRepository, concertScheduleRepository)
+    val reservationRepository = mockk<ReservationRepository>()
+    val getAvailableDatesService = GetAvailableDatesService(concertRepository, reservationRepository)
     Given("예약 가능 날짜 조회에서") {
         val concertId = 1L
 

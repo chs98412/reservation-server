@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.application.concert
 
-import kr.hhplus.be.server.domain.concert.ConcertSchedule
 import java.time.LocalDate
 
 interface GetAvailableDatesUseCase {
@@ -11,7 +10,7 @@ data class ReservationAvailableDatesResponse(
     val availableDates: List<LocalDate>
 ) {
     companion object {
-        fun from(concertSchedule: List<ConcertSchedule>) =
-            ReservationAvailableDatesResponse(availableDates = concertSchedule.map { it.date })
+        fun from(concertSchedules: List<LocalDate>) =
+            ReservationAvailableDatesResponse(availableDates = concertSchedules)
     }
 }

@@ -2,6 +2,7 @@ package kr.hhplus.be.server.presentation
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document
 import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
+import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import io.mockk.MockKAnnotations
@@ -76,7 +77,7 @@ class QueueControllerTest {
         every { createTokenUseCase.execute(any(), any()) } returns QueueTokenResponse(token = "token")
 
         mockMvc.perform(
-            post("/queue/token")
+            post("/queue/token/{concert-id}", 1)
                 .header("X-ACCOUNT-ID", "account123")
         )
             .andExpect(status().isOk)
@@ -89,6 +90,9 @@ class QueueControllerTest {
                             .description("대기열 토큰 발급")
                             .requestHeaders(
                                 headerWithName("X-ACCOUNT-ID").description("사용자 식별 헤더")
+                            )
+                            .pathParameters(
+                                parameterWithName("concert-id").description("콘서트 ID")
                             )
                             .responseFields(
                                 fieldWithPath("token").type(JsonFieldType.STRING).description("토큰 정보")

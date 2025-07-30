@@ -14,9 +14,6 @@ class Reservation(
     @Column(name = "concert_id", nullable = false)
     val concertId: Long,
 
-    @Column(name = "schedule_id", nullable = false)
-    val scheduleId: Long,
-
     @Column(name = "seat_no", nullable = false)
     val seatNo: Int,
 
@@ -27,7 +24,7 @@ class Reservation(
     var accountId: String? = null,
 
     @Column(nullable = false)
-    var status: String = "AVAILABLE",
+    var status: Status = Status.AVAILABLE,
 
     @Column(nullable = false)
     val price: Long = 1000,
@@ -35,27 +32,23 @@ class Reservation(
     @Column(name = "reserved_at")
     var reservedAt: LocalDateTime? = null,
 ) {
-    fun markAsReserved() {
-        status = "RESERVED"
-    }
-
     fun markAsPaid() {
-        status = "PAID"
+        status = Status.PAID
     }
 
     fun isUnAvailableToReserve(): Boolean {
-        return status != "AVAILABLE"
+        return status != Status.AVAILABLE
     }
 
     fun reserve(accountId: String) {
         this.accountId = accountId
-        this.status = "RESERVED"
+        this.status = Status.RESERVED
         this.reservedAt = LocalDateTime.now()
     }
 
     fun expireIfNeeded() {
         if (reservedAt != null && reservedAt!!.plusMinutes(EXPIRATION_MINUTES).isBefore(LocalDateTime.now())) {
-            status = "AVAILABLE"
+            status = Status.AVAILABLE
             accountId = null
             reservedAt = null
         }
@@ -64,4 +57,10 @@ class Reservation(
     companion object {
         private const val EXPIRATION_MINUTES = 5L
     }
+}
+
+enum class Status {
+    AVAILABLE,
+    RESERVED,
+    PAID
 }

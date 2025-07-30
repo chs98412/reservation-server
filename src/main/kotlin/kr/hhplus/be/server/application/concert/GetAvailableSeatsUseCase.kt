@@ -8,11 +8,11 @@ interface GetAvailableSeatsUseCase {
 }
 
 data class AvailableConcertReservationFetchResponse(
-    val availableConcertIdList: List<Long>,
+    val availableReservationIdList: List<Long>,
 ) {
     companion object {
         fun from(reservations: List<Reservation>) = AvailableConcertReservationFetchResponse(
-            availableConcertIdList = reservations.map { it.id }
+            availableReservationIdList = reservations.map { it.id }
         )
     }
 }

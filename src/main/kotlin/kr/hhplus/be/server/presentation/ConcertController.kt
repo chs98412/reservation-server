@@ -21,7 +21,7 @@ class ConcertController(
     fun getAvailableDates(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
-        @RequestParam("concert-id") concertId: String,
+        @RequestParam("concert-id") concertId: Long,
     ): ResponseEntity<ReservationAvailableDatesResponse> {
         if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
         return ResponseEntity.ok(getAvailableDatesUseCase.execute(concertId))
@@ -32,7 +32,7 @@ class ConcertController(
     fun getAvailableSeats(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
-        @RequestParam("concert-id") concertId: String,
+        @RequestParam("concert-id") concertId: Long,
         @RequestParam("date") date: LocalDate,
     ): ResponseEntity<AvailableConcertReservationFetchResponse> {
         if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()

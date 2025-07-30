@@ -16,15 +16,14 @@ class ReserveSeatServiceTest : BehaviorSpec({
 
     val command = SeatReservationCommand(
         concertId = 1L,
-        scheduleId = 1,
         seatNo = 1,
         accountId = "user-123"
     )
 
     Given("예약 대상 좌석이 존재하지 않을 때") {
         every {
-            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
-                command.concertId, command.scheduleId, command.seatNo
+            reservationRepository.findByConcertIdAndSeatNo(
+                command.concertId, command.seatNo
             )
         } returns null
 
@@ -40,8 +39,8 @@ class ReserveSeatServiceTest : BehaviorSpec({
         every { reservedSeat.isUnAvailableToReserve() } returns true
 
         every {
-            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
-                command.concertId, command.scheduleId, command.seatNo
+            reservationRepository.findByConcertIdAndSeatNo(
+                command.concertId, command.seatNo
             )
         } returns reservedSeat
 
@@ -57,8 +56,8 @@ class ReserveSeatServiceTest : BehaviorSpec({
         every { seat.isUnAvailableToReserve() } returns false
 
         every {
-            reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
-                command.concertId, command.scheduleId, command.seatNo
+            reservationRepository.findByConcertIdAndSeatNo(
+                command.concertId, command.seatNo
             )
         } returns seat
 

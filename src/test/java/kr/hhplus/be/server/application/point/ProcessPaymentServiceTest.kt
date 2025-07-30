@@ -34,8 +34,8 @@ class ProcessPaymentServiceTest : BehaviorSpec({
 
             Then("잔액 차감과 예약 상태 변경이 호출되어야 한다") {
                 verify(exactly = 1) { balance.deduct(300) }
-                verify(exactly = 1) { reservation1.markAsReserved() }
-                verify(exactly = 1) { reservation2.markAsReserved() }
+                verify(exactly = 1) { reservation1.markAsPaid() }
+                verify(exactly = 1) { reservation2.markAsPaid() }
             }
         }
     }

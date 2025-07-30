@@ -13,10 +13,10 @@ class QueueController(
     private val createTokenUseCase: CreateTokenUseCase,
     private val getStatusUseCase: GetStatusUseCase,
 ) {
-    @PostMapping("/token")
+    @PostMapping("/token/{concert-id}")
     fun createToken(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
-        @RequestParam("concert-id") concertId: Long,
+        @PathVariable("concert-id") concertId: Long,
     ): ResponseEntity<QueueTokenResponse> {
         return ResponseEntity.ok(createTokenUseCase.execute(accountId, concertId))
     }

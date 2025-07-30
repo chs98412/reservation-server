@@ -10,9 +10,8 @@ class ReserveSeatService(
     private val reservationRepository: ReservationRepository,
 ) : ReserveSeatUseCase {
     override fun execute(command: SeatReservationCommand) {
-        reservationRepository.findByConcertIdAndScheduleIdAndSeatNo(
+        reservationRepository.findByConcertIdAndSeatNo(
             command.concertId,
-            command.scheduleId,
             command.seatNo
         )
             ?.let {
