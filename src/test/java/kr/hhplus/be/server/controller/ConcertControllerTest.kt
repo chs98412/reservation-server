@@ -6,13 +6,22 @@ import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kr.hhplus.be.server.controller.model.request.PaymentRequest
+import io.mockk.every
+import io.mockk.mockk
+import kr.hhplus.be.server.application.queue.QueueService
+import kr.hhplus.be.server.application.concert.ConcertService
+import kr.hhplus.be.server.application.concert.model.AvailableConcertReservationFetchSummary
+import kr.hhplus.be.server.application.concert.model.ConcertScheduleFetchSummary
+import kr.hhplus.be.server.application.model.QueueStatusSummary
 import kr.hhplus.be.server.controller.model.request.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -20,6 +29,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.snippet.Attributes
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -29,14 +39,29 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.time.LocalDate
 
+@TestConfiguration
+class ReservationMockConfig {
+    @Bean
+    fun queueService(): QueueService = mockk(relaxed = true)
+
+    @Bean
+    fun concertService(): ConcertService = mockk(relaxed = true)
+}
 
 @ExtendWith(RestDocumentationExtension::class)
-@WebMvcTest
-class ReservationControllerTest {
+@Import(ReservationMockConfig::class)
+@WebMvcTest(controllers = [ConcertController::class])
+class ConcertControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
 
     lateinit var mockMvc: MockMvc
+
+    @Autowired
+    lateinit var queueService: QueueService
+
+    @Autowired
+    lateinit var concertService: ConcertService
 
     val objectMapper = jacksonObjectMapper()
 
@@ -51,8 +76,13 @@ class ReservationControllerTest {
 
     @Test
     fun `예약 가능 날짜 조회 API`() {
+        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns queueSummary
+
+        val summary = ConcertScheduleFetchSummary(availableDates = listOf(LocalDate.now()))
+        every { concertService.getAvailableDates(any()) } returns summary
         mockMvc.perform(
-            get("/reservation/available-dates?concert-id={concert-id}", 1)
+            get("/reservation/available-dates?concert-id={concert-id}", "concert_a")
                 .header("X-ACCOUNT-ID", "account123")
                 .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
         )
@@ -72,7 +102,11 @@ class ReservationControllerTest {
                                 parameterWithName("concert-id").description("콘서트 ID")
                             )
                             .responseFields(
-                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("예약 가능 날짜 목록"),
+                                fieldWithPath("availableDates").type(JsonFieldType.ARRAY).description("예약 가능 날짜 목록")
+                                    .attributes(
+                                        Attributes.key("availableDates")
+                                            .value(summary.availableDates.map { it.toString() })
+                                    ),
                             )
                             .build()
                     )
@@ -83,8 +117,13 @@ class ReservationControllerTest {
 
     @Test
     fun `예약 가능 좌석 조회 API`() {
+        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns queueSummary
+
+        val summary = AvailableConcertReservationFetchSummary(availableConcertIdList = listOf(1, 2, 3))
+        every { concertService.getAvailableSeats(any(), any()) } returns summary
         mockMvc.perform(
-            get("/reservation/available-seats?date={date}", LocalDate.now())
+            get("/reservation/available-seats?date={date}&concert-id={concert-id}", LocalDate.now(), "concert_a")
                 .header("X-ACCOUNT-ID", "account123")
                 .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
         )
@@ -101,10 +140,15 @@ class ReservationControllerTest {
                                 headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
                             )
                             .queryParameters(
-                                parameterWithName("date").description("검색 일자")
+                                parameterWithName("date").description("검색 일자"),
+                                parameterWithName("concert-id").description("콘서트 식별자")
                             )
                             .responseFields(
-                                fieldWithPath("availableSeats").type(JsonFieldType.ARRAY).description("예약 가능 좌석 목록"),
+                                fieldWithPath("availableConcertIdList").type(JsonFieldType.ARRAY)
+                                    .description("예약 가능 좌석 목록")
+                                    .attributes(
+                                        Attributes.key("availableConcertIdList").value(summary.availableConcertIdList)
+                                    ),
                             )
                             .build()
                     )
@@ -114,7 +158,9 @@ class ReservationControllerTest {
 
     @Test
     fun `좌석 예약 요청 API`() {
-        val requestBody = SeatReservationRequest(seatId = 1)
+        val queueSummary = QueueStatusSummary(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        every { queueService.getStatus(any()) } returns queueSummary
+        val requestBody = SeatReservationRequest(concertId = "concert-id", scheduleId = 1, seatNo = 1)
 
         mockMvc.perform(
             post("/reservation")
@@ -136,46 +182,20 @@ class ReservationControllerTest {
                                 headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
                             )
                             .requestFields(
-                                fieldWithPath("seatId").type(JsonFieldType.NUMBER).description("예약할 좌석 번호")
+                                fieldWithPath("concertId").type(JsonFieldType.STRING).description("콘서트 ID").attributes(
+                                    Attributes.key("concertId").value(requestBody.concertId)
+                                ),
+                                fieldWithPath("scheduleId").type(JsonFieldType.NUMBER).description("공연 회차 ID")
+                                    .attributes(
+                                        Attributes.key("scheduleId").value(requestBody.scheduleId)
+                                    ),
+                                fieldWithPath("seatNo").type(JsonFieldType.NUMBER).description("예약할 좌석 번호").attributes(
+                                    Attributes.key("seatNo").value(requestBody.seatNo)
+                                ),
                             )
                             .build()
                     )
                 )
             )
     }
-
-    @Test
-    fun `결제 처리 API`() {
-        val request = PaymentRequest(
-            reservationId = 1,
-        )
-
-        val json = jacksonObjectMapper().writeValueAsString(request)
-
-        mockMvc.perform(
-            post("/point/payment")
-                .header("X-ACCOUNT-ID", "account123")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-        )
-            .andExpect(status().isNoContent)
-            .andDo(
-                document(
-                    "process-payment",
-                    preprocessResponse(),
-                    resource(
-                        ResourceSnippetParameters.builder()
-                            .description("결제 처리 API")
-                            .requestHeaders(
-                                headerWithName("X-ACCOUNT-ID").description("사용자 ID"),
-                            )
-                            .requestFields(
-                                fieldWithPath("reservationId").type(JsonFieldType.NUMBER).description("예약 번호"),
-                            )
-                            .build()
-                    )
-                )
-            )
-    }
-
 }

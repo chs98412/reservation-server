@@ -1,11 +1,13 @@
 package kr.hhplus.be.server.controller.model.response
 
+import kr.hhplus.be.server.application.point.model.BalanceFetchSummary
+
 data class BalanceDetailResponse(
-    val balance: Long
+    val point: Long
 ) {
     companion object {
-        val mockResponse = BalanceDetailResponse(
-            balance = 20000
+        fun from(summary: BalanceFetchSummary) = BalanceDetailResponse(
+            point = summary.point,
         )
     }
 }
