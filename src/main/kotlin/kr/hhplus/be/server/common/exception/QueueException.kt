@@ -19,6 +19,11 @@ class InvalidQueueTokenException(
 
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class QueueNotFoundException(
+class AccountNotFoundInQueueException(
     override val message: String = "대기열에 존재하지 않습니다.",
+) : QueueException(message)
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+class QueueNotFoundException(
+    override val message: String = "대기열이 존재하지 않습니다.",
 ) : QueueException(message)

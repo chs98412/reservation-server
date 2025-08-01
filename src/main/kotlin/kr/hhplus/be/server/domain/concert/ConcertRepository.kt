@@ -1,19 +1,7 @@
 package kr.hhplus.be.server.domain.concert
 
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
 
 @Repository
-interface ConcertRepository {
-    fun findByConcertId(concertId: String): Concert?
-    fun findAllByConcertId(concertId: String): List<ConcertSchedule>
-    fun findAllByConcertIdAndDateAndStatus(concertId: String, date: LocalDate, status: String): List<Reservation>
-    fun findAllByUserIdAndStatus(userId: String, status: String): List<Reservation>
-    fun findByConcertIdAndScheduleIdAndSeatNo(
-        concertId: String,
-        scheduleId: Long,
-        seatNo: Int,
-    ): Reservation?
-
-    fun findAllByStatus(status: String): List<Reservation>
-}
+interface ConcertRepository : JpaRepository<Concert, Long>

@@ -1,0 +1,2 @@
+### 좌석 조회
+GET localhost:8080/reservation/available-seats?concert-id=1&date=2025-01-02

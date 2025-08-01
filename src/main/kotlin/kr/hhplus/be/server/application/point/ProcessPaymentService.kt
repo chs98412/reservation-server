@@ -1,22 +1,24 @@
 package kr.hhplus.be.server.application.point
 
 import kr.hhplus.be.server.common.exception.NotFoundBalanceException
-import kr.hhplus.be.server.domain.concert.ConcertRepository
+import kr.hhplus.be.server.domain.concert.ReservationRepository
+import kr.hhplus.be.server.domain.concert.Status
 import kr.hhplus.be.server.domain.point.BalanceRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProcessPaymentService(
     private val balanceRepository: BalanceRepository,
-    private val concertRepository: ConcertRepository,
+    private val reservationRepository: ReservationRepository,
 ) : ProcessPaymentUseCase {
 
-    //TODO 로직 고민 필요, 결제 api를 외부 api 사용한다고 생각하고 트랜잭션 고민해봐야할듯
+    @Transactional
     override fun execute(accountId: String) {
         val balance = balanceRepository.findByAccountId(accountId) ?: throw NotFoundBalanceException()
-        val reservations = concertRepository.findAllByUserIdAndStatus(accountId, "RESERVED")
+        val reservations = reservationRepository.findAllByAccountIdAndStatus(accountId, Status.RESERVED)
         val totalPrice = reservations.sumOf { it.price }
         balance.deduct(totalPrice)
-        reservations.forEach { it.markAsReserved() }
+        reservations.forEach { it.markAsPaid() }
     }
 }

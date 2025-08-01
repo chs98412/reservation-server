@@ -11,7 +11,7 @@ data class BalanceFetchResponse(
 ) {
     companion object {
         fun from(balance: Balance) = BalanceFetchResponse(
-            point = balance.getAmount()
+            point = balance.amount
         )
     }
 }
