@@ -30,12 +30,12 @@ class ConcertController(
 
     @GetMapping("/available-seats")
     fun getAvailableSeats(
-        @RequestHeader("X-ACCOUNT-ID") accountId: String,
-        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
+//        @RequestHeader("X-ACCOUNT-ID") accountId: String,
+//        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
         @RequestParam("concert-id") concertId: Long,
         @RequestParam("date") date: LocalDate,
     ): ResponseEntity<AvailableConcertReservationFetchResponse> {
-        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+//        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
 
         return ResponseEntity.ok(
             getAvailableSeatsUseCase.execute(

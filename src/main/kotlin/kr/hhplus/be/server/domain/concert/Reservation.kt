@@ -23,6 +23,7 @@ class Reservation(
     @Column(name = "account_id")
     var accountId: String? = null,
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: Status = Status.AVAILABLE,
 

@@ -4,11 +4,13 @@ import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
 import kr.hhplus.be.server.domain.concert.ReservationRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ReserveSeatService(
     private val reservationRepository: ReservationRepository,
 ) : ReserveSeatUseCase {
+    @Transactional
     override fun execute(command: SeatReservationCommand) {
         reservationRepository.findByConcertIdAndSeatNo(
             command.concertId,
