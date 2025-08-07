@@ -32,7 +32,7 @@ class CreateTokenConcurrencyTest {
     }
 
     @Test
-    fun `여러 사용자가 동시에 토큰을 발급받으면 totalParticipantCount는 10이어야 한다`() {
+    fun `여러 사용자가 동시에 토큰을 발급받으면 totalParticipantCount는 사용자 수와 같아야 한다`() {
         // given
         val concertId = 1L
         val accountsCount = 1000L
@@ -40,7 +40,6 @@ class CreateTokenConcurrencyTest {
 
         val executor = Executors.newFixedThreadPool(accountIds.size)
         val latch = CountDownLatch(accountIds.size)
-        val start = System.currentTimeMillis()
 
         accountIds.forEach { accId ->
             executor.submit {
@@ -56,12 +55,7 @@ class CreateTokenConcurrencyTest {
 
         latch.await()
 
-        val end = System.currentTimeMillis()
-        val duration = end - start
-        println("🔧 전체 실행 시간: ${duration}ms")
-
         val queueState = queueStateRepository.findAll().first { it.concertId == concertId }
-        println("총 대기 인원 수: ${queueState?.totalParticipantCount}")
         queueState?.totalParticipantCount shouldBe accountsCount
     }
 }
