@@ -158,9 +158,6 @@ class PayControllerTest {
                             .requestHeaders(
                                 headerWithName("X-ACCOUNT-ID").description("사용자 ID"),
                             )
-                            .requestFields(
-                                fieldWithPath("reservationId").type(JsonFieldType.NUMBER).description("예약 번호"),
-                            )
                             .build()
                     )
                 )

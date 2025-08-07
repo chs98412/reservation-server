@@ -93,7 +93,7 @@ class ConcertControllerTest {
         val summary = ReservationAvailableDatesResponse(availableDates = listOf(LocalDate.now()))
         every { getAvailableDatesUseCase.execute(any()) } returns summary
         mockMvc.perform(
-            get("/reservation/available-dates?concert-id={concert-id}", "concert_a")
+            get("/reservation/available-dates?concert-id={concert-id}", 1)
                 .header("X-ACCOUNT-ID", "account123")
                 .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
         )
@@ -131,10 +131,10 @@ class ConcertControllerTest {
         val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
         every { getStatusUseCase.execute(any()) } returns queueSummary
 
-        val summary = AvailableConcertReservationFetchResponse(availableConcertIdList = listOf(1, 2, 3))
+        val summary = AvailableConcertReservationFetchResponse(availableReservationIdList = listOf(1, 2, 3))
         every { getAvailableSeatsUseCase.execute(any(), any()) } returns summary
         mockMvc.perform(
-            get("/reservation/available-seats?date={date}&concert-id={concert-id}", LocalDate.now(), "concert_a")
+            get("/reservation/available-seats?date={date}&concert-id={concert-id}", LocalDate.now(), 1)
                 .header("X-ACCOUNT-ID", "account123")
                 .header("X-QUEUE-TOKEN-ID", "bb7de087-2e5d-4b6c-b7c4-bb3b97360d24")
         )
@@ -155,10 +155,11 @@ class ConcertControllerTest {
                                 parameterWithName("concert-id").description("콘서트 식별자")
                             )
                             .responseFields(
-                                fieldWithPath("availableConcertIdList").type(JsonFieldType.ARRAY)
+                                fieldWithPath("availableReservationIdList").type(JsonFieldType.ARRAY)
                                     .description("예약 가능 좌석 목록")
                                     .attributes(
-                                        Attributes.key("availableConcertIdList").value(summary.availableConcertIdList)
+                                        Attributes.key("availableReservationIdList")
+                                            .value(summary.availableReservationIdList)
                                     ),
                             )
                             .build()
@@ -171,7 +172,7 @@ class ConcertControllerTest {
     fun `좌석 예약 요청 API`() {
         val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
         every { getStatusUseCase.execute(any()) } returns queueSummary
-        val requestBody = SeatReservationRequest(concertId = "concert-id", scheduleId = 1, seatNo = 1)
+        val requestBody = SeatReservationRequest(concertId = 1, seatNo = 1)
         justRun { reserveSeatUseCase.execute(any()) }
         mockMvc.perform(
             post("/reservation")
@@ -193,13 +194,9 @@ class ConcertControllerTest {
                                 headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
                             )
                             .requestFields(
-                                fieldWithPath("concertId").type(JsonFieldType.STRING).description("콘서트 ID").attributes(
+                                fieldWithPath("concertId").type(JsonFieldType.NUMBER).description("콘서트 ID").attributes(
                                     Attributes.key("concertId").value(requestBody.concertId)
                                 ),
-                                fieldWithPath("scheduleId").type(JsonFieldType.NUMBER).description("공연 회차 ID")
-                                    .attributes(
-                                        Attributes.key("scheduleId").value(requestBody.scheduleId)
-                                    ),
                                 fieldWithPath("seatNo").type(JsonFieldType.NUMBER).description("예약할 좌석 번호").attributes(
                                     Attributes.key("seatNo").value(requestBody.seatNo)
                                 ),

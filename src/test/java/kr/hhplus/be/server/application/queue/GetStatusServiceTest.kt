@@ -8,20 +8,20 @@ import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
-import kr.hhplus.be.server.common.exception.QueueNotFoundException
-import kr.hhplus.be.server.domain.queue.QueueRepository
-import kr.hhplus.be.server.domain.queue.QueueToken
+import kr.hhplus.be.server.common.exception.AccountNotFoundInQueueException
+import kr.hhplus.be.server.domain.queue.*
 import java.time.LocalDateTime
 
 class GetStatusServiceTest : BehaviorSpec({
 
     lateinit var getStatusService: GetStatusService
 
-    val queueRepository = mockk<QueueRepository>(relaxed = true)
     val queueTokenSigner = mockk<QueueTokenSigner>()
+    val participantRepository = mockk<QueueParticipantRepository>()
+    val queueStateRepository = mockk<QueueStateRepository>()
 
     beforeTest {
-        getStatusService = GetStatusService(queueRepository, queueTokenSigner)
+        getStatusService = GetStatusService(queueTokenSigner, participantRepository, queueStateRepository)
     }
 
     Given("사용자가 유효한 토큰을 갖고 있고, 큐 번호도 존재하며 입장 가능한 경우") {
@@ -30,8 +30,11 @@ class GetStatusServiceTest : BehaviorSpec({
         val decodedToken =
             QueueToken(accountId = "accountId", queueNumber = queueNumber, createdAt = LocalDateTime.now())
         every { queueTokenSigner.decode(any()) } returns decodedToken
-        every { queueRepository.getQueueNumber(any()) } returns queueNumber
-        every { queueRepository.getCurrentEntranceNumber() } returns 10L
+        every { participantRepository.findByAccountId(any()) } returns QueueParticipant(
+            accountId = "accountId",
+            queueNumber = queueNumber,
+        )
+        every { queueStateRepository.findByConcertId(concertId = 1L) } returns QueueState(entranceNumber = 10L)
 
         When("getStatus를 호출하면") {
             val result = getStatusService.execute(tokenId)
@@ -48,11 +51,11 @@ class GetStatusServiceTest : BehaviorSpec({
         val tokenId = "encoded-token"
         val decodedToken = QueueToken(accountId = "accountId", queueNumber = 1L, createdAt = LocalDateTime.now())
         every { queueTokenSigner.decode(tokenId) } returns decodedToken
-        every { queueRepository.getQueueNumber(any()) } returns null
+        every { participantRepository.findByAccountId(any()) } returns null
 
         When("getStatus를 호출하면") {
             Then("QueueNotFoundException이 발생한다") {
-                shouldThrow<QueueNotFoundException> {
+                shouldThrow<AccountNotFoundInQueueException> {
                     getStatusService.execute(tokenId)
                 }
             }
@@ -63,8 +66,11 @@ class GetStatusServiceTest : BehaviorSpec({
         val tokenId = "encoded-token"
         val decodedToken = QueueToken(accountId = "accountId", queueNumber = 1L, createdAt = LocalDateTime.now())
         every { queueTokenSigner.decode(any()) } returns decodedToken
-        every { queueRepository.getQueueNumber(any()) } returns 10L
-        every { queueRepository.getCurrentEntranceNumber() } returns 1000000L
+        every { participantRepository.findByAccountId(any()) } returns QueueParticipant(
+            accountId = "accountId",
+            queueNumber = 1L
+        )
+        every { queueStateRepository.findByConcertId(concertId = 1L) } returns QueueState(entranceNumber = 1000000L)
 
         When("getStatus를 호출하면") {
             val result = getStatusService.execute(tokenId)

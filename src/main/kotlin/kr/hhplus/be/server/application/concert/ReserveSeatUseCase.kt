@@ -6,7 +6,6 @@ interface ReserveSeatUseCase {
 
 data class SeatReservationCommand(
     val accountId: String,
-    val concertId: String,
-    val scheduleId: Long,
+    val concertId: Long,
     val seatNo: Int,
 )
