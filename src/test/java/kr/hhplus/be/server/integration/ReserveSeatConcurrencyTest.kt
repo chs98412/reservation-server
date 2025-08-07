@@ -1,16 +1,16 @@
 package kr.hhplus.be.server.integration
 
+import io.kotest.matchers.shouldBe
 import kr.hhplus.be.server.application.concert.ReserveSeatService
 import kr.hhplus.be.server.application.concert.SeatReservationCommand
-import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
 import kr.hhplus.be.server.domain.concert.Reservation
 import kr.hhplus.be.server.domain.concert.ReservationRepository
 import kr.hhplus.be.server.domain.concert.Status
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.orm.ObjectOptimisticLockingFailureException
 import java.time.LocalDate
 import java.util.*
 import java.util.concurrent.CountDownLatch
@@ -48,7 +48,8 @@ class ReserveSeatConcurrencyTest {
 
         val executor = Executors.newFixedThreadPool(accountIds.size)
         val latch = CountDownLatch(accountIds.size)
-        val results = Collections.synchronizedList(mutableListOf<String>())
+        val succeedResults = Collections.synchronizedList(mutableListOf<String>())
+        val failedResults = Collections.synchronizedList(mutableListOf<String>())
 
         accountIds.forEach { accId ->
             executor.submit {
@@ -60,9 +61,9 @@ class ReserveSeatConcurrencyTest {
                             accountId = accId
                         )
                     )
-                    results.add("SUCCESS:$accId")
-                } catch (e: AlreadyReservedSeatException) {
-                    results.add("FAIL:$accId")
+                    succeedResults.add(accId)
+                } catch (e: ObjectOptimisticLockingFailureException) {
+                    failedResults.add(accId)
                 } finally {
                     latch.countDown()
                 }
@@ -71,8 +72,7 @@ class ReserveSeatConcurrencyTest {
 
         latch.await()
 
-        val successCount = results.count { it.startsWith("SUCCESS") }
-        println(results)
-        assertEquals(1, successCount)
+        succeedResults.size shouldBe 1
+        failedResults.size shouldBe accountIds.size - 1
     }
 }
