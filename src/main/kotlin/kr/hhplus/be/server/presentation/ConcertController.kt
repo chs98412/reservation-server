@@ -3,6 +3,7 @@ package kr.hhplus.be.server.presentation
 import kr.hhplus.be.server.application.concert.*
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.common.exception.InvalidQueueTokenException
+import kr.hhplus.be.server.domain.concert.Genre
 import kr.hhplus.be.server.infrastructure.acquireLockOrThrow
 import kr.hhplus.be.server.presentation.model.SeatReservationRequest
 import org.redisson.api.RedissonClient
@@ -17,6 +18,7 @@ class ConcertController(
     private val getAvailableDatesUseCase: GetAvailableDatesUseCase,
     private val getAvailableSeatsUseCase: GetAvailableSeatsUseCase,
     private val reserveSeatUseCase: ReserveSeatUseCase,
+    private val getRankTopConcertsService: GetRankTopConcertsService,
     private val redisson: RedissonClient,
 ) {
 
@@ -59,5 +61,10 @@ class ConcertController(
             reserveSeatUseCase.execute(request.toCommand(accountId))
         }
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/top-ranked/{genre}")
+    fun getTop30ByGenre(@PathVariable genre: Genre): ResponseEntity<List<TopRankedConcertResponse>> {
+        return ResponseEntity.ok().body(getRankTopConcertsService.execute(genre))
     }
 }
