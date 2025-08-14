@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.presentation
 
 import kr.hhplus.be.server.application.point.*
+import kr.hhplus.be.server.infrastructure.acquireLockOrThrow
+import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -10,6 +12,7 @@ class PayController(
     private val chargePointUseCase: ChargePointUseCase,
     private val getBalanceUseCase: GetBalanceUseCase,
     private val processPaymentUseCase: ProcessPaymentUseCase,
+    private val redisson: RedissonClient,
 ) {
 
     @PostMapping("/charge")
@@ -32,7 +35,9 @@ class PayController(
     fun processPayment(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
     ): ResponseEntity<Void> {
-        processPaymentUseCase.execute(accountId)
+        redisson.acquireLockOrThrow(key = "pay:${accountId}") {
+            processPaymentUseCase.execute(accountId)
+        }
         return ResponseEntity.noContent().build()
     }
 }

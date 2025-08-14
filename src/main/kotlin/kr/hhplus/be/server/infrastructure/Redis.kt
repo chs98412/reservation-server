@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.infrastructure
 
 import org.redisson.api.RedissonClient
+import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 
 inline fun <T> RedissonClient.withLock(
@@ -8,27 +9,30 @@ inline fun <T> RedissonClient.withLock(
     waitTime: Long = 5,
     leaseTime: Long = 10,
     unit: TimeUnit = TimeUnit.SECONDS,
-    fair: Boolean = false,
-    onFail: () -> T = {
-        throw LockAcquireTimeoutException(
-            "Timeout while acquiring lock for key='$key' (wait=${waitTime} ${unit.name.lowercase()})"
-        )
-    },
+    onFail: Throwable = LockAcquireException("락 소지에 실패했습니다. key='$key'"),
     block: () -> T
 ): T {
-    val rlock = if (fair) getFairLock(key) else getLock(key)
+    val logger = LoggerFactory.getLogger(this::class.java)
+    val rlock = getLock(key)
     val acquired = runCatching {
         rlock.tryLock(waitTime, leaseTime, unit)
     }.getOrElse { e ->
-        throw LockAcquireException("Failed to tryLock for key='$key'", e)
+        Thread.currentThread().interrupt()
+        logger.error(e.message, e)
+        false
     }
-    if (!acquired) return onFail()
-
+    if (!acquired) {
+        throw onFail
+    }
     try {
         return block()
     } finally {
         if (rlock.isHeldByCurrentThread) {
-            runCatching { rlock.unlock() }
+            runCatching {
+                rlock.unlock()
+            }.getOrElse { e ->
+                logger.error(e.message, e)
+            }
         }
     }
 }
@@ -37,20 +41,15 @@ inline fun <T> RedissonClient.acquireLockOrThrow(
     key: String,
     leaseTime: Long = 10,
     unit: TimeUnit = TimeUnit.SECONDS,
-    fair: Boolean = false,
-    onFail: () -> T = {
-        throw LockAcquireTimeoutException("Immediate lock acquisition failed for key='$key'")
-    },
+    onFail: Throwable = LockAcquireException("중복된 요청입니다."),
     block: () -> T
 ): T = withLock(
     key = key,
     waitTime = 0,
     leaseTime = leaseTime,
     unit = unit,
-    fair = fair,
     onFail = onFail,
     block = block
 )
 
-class LockAcquireException(message: String, cause: Throwable) : RuntimeException(message, cause)
-class LockAcquireTimeoutException(message: String) : RuntimeException(message)
+class LockAcquireException(message: String) : RuntimeException(message)

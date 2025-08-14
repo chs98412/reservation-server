@@ -3,7 +3,9 @@ package kr.hhplus.be.server.presentation
 import kr.hhplus.be.server.application.concert.*
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.common.exception.InvalidQueueTokenException
+import kr.hhplus.be.server.infrastructure.acquireLockOrThrow
 import kr.hhplus.be.server.presentation.model.SeatReservationRequest
+import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDate
@@ -15,6 +17,7 @@ class ConcertController(
     private val getAvailableDatesUseCase: GetAvailableDatesUseCase,
     private val getAvailableSeatsUseCase: GetAvailableSeatsUseCase,
     private val reserveSeatUseCase: ReserveSeatUseCase,
+    private val redisson: RedissonClient,
 ) {
 
     @GetMapping("/available-dates")
@@ -30,12 +33,12 @@ class ConcertController(
 
     @GetMapping("/available-seats")
     fun getAvailableSeats(
-//        @RequestHeader("X-ACCOUNT-ID") accountId: String,
-//        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
+        @RequestHeader("X-ACCOUNT-ID") accountId: String,
+        @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
         @RequestParam("concert-id") concertId: Long,
         @RequestParam("date") date: LocalDate,
     ): ResponseEntity<AvailableConcertReservationFetchResponse> {
-//        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
 
         return ResponseEntity.ok(
             getAvailableSeatsUseCase.execute(
@@ -52,7 +55,9 @@ class ConcertController(
         @RequestBody request: SeatReservationRequest,
     ): ResponseEntity<Void> {
         if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
-        reserveSeatUseCase.execute(request.toCommand(accountId))
+        redisson.acquireLockOrThrow(key = "reserve:${request.concertId}:${request.seatNo}") {
+            reserveSeatUseCase.execute(request.toCommand(accountId))
+        }
         return ResponseEntity.noContent().build()
     }
 }

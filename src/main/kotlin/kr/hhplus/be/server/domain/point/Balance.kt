@@ -17,9 +17,6 @@ class Balance(
     val accountId: String,
 
     amount: Long,
-
-    @Version
-    var version: Long = 0,
 ) {
     @Column(name = "amount")
     var amount = amount

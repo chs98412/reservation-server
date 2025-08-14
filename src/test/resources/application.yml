@@ -13,8 +13,5 @@ spring:
       hibernate:
   #        format_sql: true
   #        show_sql: true
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
+  autoconfigure:
+    exclude: org.redisson.spring.starter.RedissonAutoConfiguration

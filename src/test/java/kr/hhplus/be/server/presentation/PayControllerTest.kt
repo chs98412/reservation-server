@@ -5,6 +5,7 @@ import com.epages.restdocs.apispec.ResourceDocumentation.headerWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -12,11 +13,10 @@ import kr.hhplus.be.server.application.point.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.redisson.api.RLock
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -25,6 +25,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors.preproces
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.snippet.Attributes
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -32,22 +33,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-
-@TestConfiguration
-class PointMockConfig {
-    @Bean
-    fun chargePointUseCase(): ChargePointUseCase = mockk(relaxed = true)
-
-    @Bean
-    fun getBalanceUseCase(): GetBalanceUseCase = mockk(relaxed = true)
-
-    @Bean
-    fun processPaymentUseCase(): ProcessPaymentUseCase = mockk(relaxed = true)
-}
+import java.util.concurrent.TimeUnit
 
 @ExtendWith(RestDocumentationExtension::class)
+@ContextConfiguration(classes = [PayController::class])
 @WebMvcTest(controllers = [PayController::class])
-@Import(PointMockConfig::class)
 class PayControllerTest {
     @Autowired
     lateinit var context: WebApplicationContext
@@ -56,14 +46,19 @@ class PayControllerTest {
 
     private val objectMapper = jacksonObjectMapper()
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var chargePointUseCase: ChargePointUseCase
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var getBalanceUseCase: GetBalanceUseCase
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var processPaymentUseCase: ProcessPaymentUseCase
+
+    @MockkBean(relaxed = true)
+    lateinit var redissonClient: RedissonClient
+
+    val rlock = mockk<RLock>(relaxed = true)
 
     @BeforeEach
     fun setUp(restDocumentation: RestDocumentationContextProvider) {
@@ -72,6 +67,11 @@ class PayControllerTest {
                 MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
             )
             .build()
+        every { redissonClient.getLock(any()) } returns rlock
+        every { redissonClient.getFairLock(any()) } returns rlock
+        every { rlock.tryLock(any<Long>(), any<Long>(), any<TimeUnit>()) } returns true
+        every { rlock.isHeldByCurrentThread } returns false
+        justRun { rlock.unlock() }
     }
 
     @Test
