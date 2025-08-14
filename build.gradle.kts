@@ -75,6 +75,9 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-core:5.9.0")
     testImplementation("io.mockk:mockk:1.13.10")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    implementation("org.redisson:redisson-spring-boot-starter:3.23.3")
+    testImplementation("com.redis:testcontainers-redis:2.2.4")
+    testImplementation("com.ninja-squad:springmockk:4.+")
 
     testImplementation("com.h2database:h2")
 }

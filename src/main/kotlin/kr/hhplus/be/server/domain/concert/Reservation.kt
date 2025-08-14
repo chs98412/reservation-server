@@ -30,9 +30,6 @@ class Reservation(
     @Column(nullable = false)
     val price: Long = 1000,
 
-    @Version
-    var version: Long = 0,
-    
     @Column(name = "reserved_at")
     var reservedAt: LocalDateTime? = null,
 ) {

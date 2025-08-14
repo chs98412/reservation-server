@@ -1,2 +1,6 @@
 ### 좌석 조회
 GET localhost:8080/reservation/available-seats?concert-id=1&date=2025-01-02
+
+### 좌석 조회
+POST localhost:8080/queue/token/1
+X-ACCOUNT-ID: account

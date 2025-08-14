@@ -13,11 +13,10 @@ import org.springframework.stereotype.Service
 class CreateTokenService(
     private val queueTokenSigner: QueueTokenSigner,
     private val participantRepository: QueueParticipantRepository,
-    private val queueStateRepository: QueueStateRepository
+    private val queueStateRepository: QueueStateRepository,
 ) : CreateTokenUseCase {
     @Transactional
     override fun execute(accountId: String, concertId: Long): QueueTokenResponse {
-
         if (participantRepository.existsByAccountId(accountId)) {
             throw AlreadyAssignedQueueAccountException()
         }

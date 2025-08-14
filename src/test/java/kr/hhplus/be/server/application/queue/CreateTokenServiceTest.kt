@@ -17,7 +17,8 @@ class CreateTokenServiceTest : BehaviorSpec({
     val queueStateRepository = mockk<QueueStateRepository>(relaxed = true)
 
     beforeTest {
-        createTokenService = CreateTokenService(queueTokenSigner, participantRepository, queueStateRepository)
+        createTokenService =
+            CreateTokenService(queueTokenSigner, participantRepository, queueStateRepository)
     }
 
     Given("대기열 토큰 생성에서") {

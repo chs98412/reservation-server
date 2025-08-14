@@ -1,27 +1,56 @@
 package kr.hhplus.be.server.integration
 
+import TestRedissonConfig
+import com.ninjasquad.springmockk.MockkBean
+import com.redis.testcontainers.RedisContainer
+import io.mockk.coEvery
+import kr.hhplus.be.server.application.queue.GetStatusUseCase
+import kr.hhplus.be.server.application.queue.QueueStatusResponse
 import kr.hhplus.be.server.application.queue.QueueTokenSigner
 import kr.hhplus.be.server.domain.concert.*
 import kr.hhplus.be.server.domain.queue.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.context.annotation.Import
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
+import org.springframework.test.context.DynamicPropertyRegistry
+import org.springframework.test.context.DynamicPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.utility.DockerImageName
 import java.time.LocalDate
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@EnableJpaRepositories(basePackages = ["kr.hhplus.be.server.domain"])
-@EntityScan(basePackages = ["kr.hhplus.be.server.domain"])
+@Import(TestRedissonConfig::class)
 class ConcertControllerTest {
+
+    companion object {
+        @Container
+        @ServiceConnection
+        @JvmStatic
+        val redis: RedisContainer = RedisContainer(
+            DockerImageName.parse("redis:7.2-alpine")
+        ).apply {
+            start()
+        }
+
+        @JvmStatic
+        @DynamicPropertySource
+        fun redisProperties(registry: DynamicPropertyRegistry) {
+            registry.add("spring.redis.host") { redis.host }
+            registry.add("spring.redis.port") { redis.firstMappedPort }
+        }
+
+    }
 
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -41,26 +70,31 @@ class ConcertControllerTest {
     @Autowired
     lateinit var queueTokenSigner: QueueTokenSigner
 
+    @Autowired
+    lateinit var redissonClient: RedissonClient
+
+    @MockkBean(relaxed = true)
+    lateinit var getStatusUseCase: GetStatusUseCase
+
     @BeforeEach
     fun setup() {
         participantRepository.deleteAll()
         queueStateRepository.deleteAll()
         reservationRepository.deleteAll()
         concertRepository.deleteAll()
-
+        coEvery { getStatusUseCase.execute(any()) } returns QueueStatusResponse(1L, true, 0L)
     }
 
 
     @Test
     fun `입장 가능한 유저는 예약 가능한 날짜를 조회할 수 있다`() {
-        val concertId = 1L
-        concertRepository.save(
+        val concertId = concertRepository.save(
             Concert(
                 name = "테스트",
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now().plusDays(3)
             )
-        )
+        ).id
 
         reservationRepository.saveAll(
             listOf(
@@ -102,16 +136,16 @@ class ConcertControllerTest {
 
     @Test
     fun `입장 가능한 유저는 특정 날짜의 예약 가능한 좌석을 조회할 수 있다`() {
-        val concertId = 1L
-        val targetDate = LocalDate.now().plusDays(1)
-
-        concertRepository.save(
+        val concertId = concertRepository.save(
             Concert(
                 name = "테스트 콘서트",
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now().plusDays(5)
             )
-        )
+        ).id
+        val targetDate = LocalDate.now().plusDays(1)
+
+
 
         reservationRepository.saveAll(
             listOf(
@@ -154,17 +188,17 @@ class ConcertControllerTest {
 
     @Test
     fun `입장 가능한 유저는 좌석 예약에 성공할 수 있다`() {
-        val concertId = 1L
-        val seatNo = 10
-        val accountId = "user-789"
-
-        concertRepository.save(
+        val concertId = concertRepository.save(
             Concert(
                 name = "좌석예약콘서트",
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now().plusDays(1)
             )
-        )
+        ).id
+        val seatNo = 10
+        val accountId = "user-789"
+
+
 
         reservationRepository.save(
             Reservation(
