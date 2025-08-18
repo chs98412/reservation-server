@@ -1,14 +1,12 @@
 package kr.hhplus.be.server.domain.queue
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "queue_state")
 class QueueState(
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     val concertId: Long = 1,

@@ -6,6 +6,7 @@ import com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName
 import com.epages.restdocs.apispec.ResourceDocumentation.resource
 import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.justRun
 import io.mockk.mockk
@@ -16,11 +17,10 @@ import kr.hhplus.be.server.presentation.model.SeatReservationRequest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.redisson.api.RLock
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
@@ -29,6 +29,7 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors.preproces
 import org.springframework.restdocs.payload.JsonFieldType
 import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
 import org.springframework.restdocs.snippet.Attributes
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -37,24 +38,11 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import java.time.LocalDate
+import java.util.concurrent.TimeUnit
 
-@TestConfiguration
-class ReservationMockConfig {
-    @Bean
-    fun getStatusUseCase(): GetStatusUseCase = mockk(relaxed = true)
-
-    @Bean
-    fun getAvailableDatesUseCase(): GetAvailableDatesUseCase = mockk(relaxed = true)
-
-    @Bean
-    fun getAvailableSeatsUseCase(): GetAvailableSeatsUseCase = mockk(relaxed = true)
-
-    @Bean
-    fun reserveSeatUseCase(): ReserveSeatUseCase = mockk(relaxed = true)
-}
 
 @ExtendWith(RestDocumentationExtension::class)
-@Import(ReservationMockConfig::class)
+@ContextConfiguration(classes = [ConcertController::class])
 @WebMvcTest(controllers = [ConcertController::class])
 class ConcertControllerTest {
     @Autowired
@@ -62,17 +50,22 @@ class ConcertControllerTest {
 
     lateinit var mockMvc: MockMvc
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var getStatusUseCase: GetStatusUseCase
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var getAvailableDatesUseCase: GetAvailableDatesUseCase
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var getAvailableSeatsUseCase: GetAvailableSeatsUseCase
 
-    @Autowired
+    @MockkBean(relaxed = true)
     lateinit var reserveSeatUseCase: ReserveSeatUseCase
+
+    @MockkBean(relaxed = true)
+    lateinit var redissonClient: RedissonClient
+
+    val rlock = mockk<RLock>(relaxed = true)
 
     val objectMapper = jacksonObjectMapper()
 
@@ -83,6 +76,11 @@ class ConcertControllerTest {
                 MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
             )
             .build()
+        every { redissonClient.getLock(any()) } returns rlock
+        every { redissonClient.getFairLock(any()) } returns rlock
+        every { rlock.tryLock(any<Long>(), any<Long>(), any<TimeUnit>()) } returns true
+        every { rlock.isHeldByCurrentThread } returns false
+        justRun { rlock.unlock() }
     }
 
     @Test
