@@ -1,54 +1,51 @@
 package kr.hhplus.be.server.application.queue
 
 import kr.hhplus.be.server.common.exception.AccountNotFoundInQueueException
-import kr.hhplus.be.server.common.exception.QueueNotFoundException
-import kr.hhplus.be.server.domain.queue.QueueParticipantRepository
-import kr.hhplus.be.server.domain.queue.QueueStateRepository
 import kr.hhplus.be.server.domain.queue.QueueToken
+import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetStatusService(
     private val queueTokenSigner: QueueTokenSigner,
-    private val participantRepository: QueueParticipantRepository,
-    private val queueStateRepository: QueueStateRepository
+    private val redisson: RedissonClient,
 ) : GetStatusUseCase {
 
-    @Transactional(readOnly = true)
     override fun execute(queueTokenId: String): QueueStatusResponse {
-        val queueToken = queueTokenSigner.decode(queueTokenId)
-        val queueNumber = participantRepository.findByAccountId(queueToken.accountId)?.queueNumber
-            ?: throw AccountNotFoundInQueueException()
-        val currentEntranceNumber =
-            queueStateRepository.findByConcertId(queueToken.concertId)?.entranceNumber ?: throw QueueNotFoundException()
+        val token = queueTokenSigner.decode(queueTokenId)
+        val concertId = token.concertId
+
+        if (isActiveUser(concertId, token.accountId)) {
+            return QueueStatusResponse.from(
+                queueNumber = token.queueNumber,
+                isAllowedToEnter = true,
+                estimateWaitTime = 0
+            )
+        }
+
+        val queueNumber = getQueueNumber(concertId, token.accountId)
+        val estimateWaitTime = calculateEstimateWaitTime(queueNumber)
 
         return QueueStatusResponse.from(
             queueNumber = queueNumber,
-            isAllowedToEnter = canEnter(queueNumber, currentEntranceNumber, QueueToken.EXPIRE_THRESHOLD),
-            estimateWaitTime = estimateWaitTime(
-                queueNumber,
-                currentEntranceNumber,
-                QueueToken.EXPIRE_THRESHOLD,
-                QueueToken.SCHEDULE_INTERVAL
-            )
+            isAllowedToEnter = false,
+            estimateWaitTime = estimateWaitTime
         )
     }
 
-    private fun canEnter(queueNumber: Long, entranceNumber: Long, expiredThreshold: Long): Boolean {
-        if (queueNumber > entranceNumber) return false
-        if (queueNumber < entranceNumber - expiredThreshold) return false
-        return true
+    private fun isActiveUser(concertId: Long, accountId: String): Boolean {
+        val active = redisson.getMapCache<String, String>("active:$concertId")
+        return active.containsKey(accountId)
     }
 
-    private fun estimateWaitTime(
-        queueNumber: Long,
-        entranceNumber: Long,
-        batchSize: Long,
-        interval: Long
-    ): Long {
-        val remaining = (queueNumber - entranceNumber).coerceAtLeast(0)
-        val batchCount = (remaining + batchSize - 1) / batchSize
-        return batchCount * interval
+    private fun getQueueNumber(concertId: Long, accountId: String): Long {
+        val waiting = redisson.getScoredSortedSet<String>("waiting:$concertId")
+        val rank = waiting.rank(accountId) ?: throw AccountNotFoundInQueueException()
+        return rank + 1L
+    }
+
+    private fun calculateEstimateWaitTime(queueNumber: Long): Long {
+        val batchCount = (queueNumber / QueueToken.QUEUE_ENTRANCE_LIMIT) + 1
+        return batchCount * QueueToken.SCHEDULE_INTERVAL
     }
 }
