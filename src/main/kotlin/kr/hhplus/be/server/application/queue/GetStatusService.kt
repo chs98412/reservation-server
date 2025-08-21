@@ -1,21 +1,21 @@
 package kr.hhplus.be.server.application.queue
 
 import kr.hhplus.be.server.common.exception.AccountNotFoundInQueueException
+import kr.hhplus.be.server.domain.queue.QueueCacheRepository
 import kr.hhplus.be.server.domain.queue.QueueToken
-import org.redisson.api.RedissonClient
 import org.springframework.stereotype.Service
 
 @Service
 class GetStatusService(
     private val queueTokenSigner: QueueTokenSigner,
-    private val redisson: RedissonClient,
+    private val queueCacheRepository: QueueCacheRepository,
 ) : GetStatusUseCase {
 
     override fun execute(queueTokenId: String): QueueStatusResponse {
         val token = queueTokenSigner.decode(queueTokenId)
         val concertId = token.concertId
 
-        if (isActiveUser(concertId, token.accountId)) {
+        if (queueCacheRepository.existsInActive(concertId, token.accountId)) {
             return QueueStatusResponse.from(
                 queueNumber = token.queueNumber,
                 isAllowedToEnter = true,
@@ -33,14 +33,9 @@ class GetStatusService(
         )
     }
 
-    private fun isActiveUser(concertId: Long, accountId: String): Boolean {
-        val active = redisson.getMapCache<String, String>("active:$concertId")
-        return active.containsKey(accountId)
-    }
-
     private fun getQueueNumber(concertId: Long, accountId: String): Long {
-        val waiting = redisson.getScoredSortedSet<String>("waiting:$concertId")
-        val rank = waiting.rank(accountId) ?: throw AccountNotFoundInQueueException()
+        val rank = queueCacheRepository.getRank(concertId, accountId)
+            ?: throw AccountNotFoundInQueueException()
         return rank + 1L
     }
 

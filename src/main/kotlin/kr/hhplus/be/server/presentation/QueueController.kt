@@ -4,8 +4,6 @@ import kr.hhplus.be.server.application.queue.CreateTokenUseCase
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.application.queue.QueueStatusResponse
 import kr.hhplus.be.server.application.queue.QueueTokenResponse
-import kr.hhplus.be.server.infrastructure.withLock
-import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -14,18 +12,15 @@ import org.springframework.web.bind.annotation.*
 class QueueController(
     private val createTokenUseCase: CreateTokenUseCase,
     private val getStatusUseCase: GetStatusUseCase,
-    private val redisson: RedissonClient,
 ) {
     @PostMapping("/token/{concert-id}")
     fun createToken(
         @RequestHeader("X-ACCOUNT-ID") accountId: String,
         @PathVariable("concert-id") concertId: Long,
     ): ResponseEntity<QueueTokenResponse> {
-        val response = redisson.withLock(key = "create-token:${concertId}:${accountId}") {
+        return ResponseEntity.ok(
             createTokenUseCase.execute(accountId, concertId)
-        }
-
-        return ResponseEntity.ok(response)
+        )
     }
 
     @GetMapping("/status")

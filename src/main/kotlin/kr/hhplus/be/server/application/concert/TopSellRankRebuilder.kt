@@ -1,29 +1,26 @@
 package kr.hhplus.be.server.application.concert
 
+import kr.hhplus.be.server.domain.concert.ConcertRankCacheRepository
 import kr.hhplus.be.server.domain.concert.ConcertRepository
-import org.redisson.api.RScoredSortedSet
-import org.redisson.api.RedissonClient
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 @Component
 class TopSellRankRebuilder(
     private val concertRepository: ConcertRepository,
-    private val redisson: RedissonClient,
+    private val concertRankCacheRepository: ConcertRankCacheRepository,
 ) {
-    @Scheduled(fixedDelay = 60_000)
-    fun rebuildAllGenres() {
-        rebuildTopSellConcerts()
-    }
-
+    @Scheduled(fixedDelay = 50_000)
     fun rebuildTopSellConcerts() {
         val rows = concertRepository.findTopSellConcerts()
-        val z: RScoredSortedSet<String> = redisson.getScoredSortedSet("top-sell")
-        z.clear()
+        if (rows.isEmpty()) return
 
+        concertRankCacheRepository.clear()
         rows.forEach { r ->
-            val s = r.score()
-            if (s > 0.0) z.add(s, r.concertId.toString())
+            val score = r.score()
+            if (score > 0.0) {
+                concertRankCacheRepository.add(r.concertId, score)
+            }
         }
     }
 }

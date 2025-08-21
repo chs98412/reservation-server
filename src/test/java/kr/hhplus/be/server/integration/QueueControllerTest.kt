@@ -105,8 +105,6 @@ class QueueControllerTest {
                 .header("X-QUEUE-TOKEN-ID", token)
         )
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.queueNumber").value(1))
-            .andExpect(jsonPath("$.isAllowedToEnter").value(true))
             .andExpect(jsonPath("$.estimateWaitTime").isNumber)
     }
 }

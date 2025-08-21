@@ -9,16 +9,9 @@ import java.time.LocalDate
 
 data class TopRankedConcertResponse(
     val concertId: Long,
-
     val name: String,
-
     val startDate: LocalDate,
-
     val endDate: LocalDate,
-
-    val views: Long,
-
-    val likes: Long,
 ) {
     companion object {
         fun from(concert: Concert) = TopRankedConcertResponse(
@@ -26,8 +19,6 @@ data class TopRankedConcertResponse(
             name = concert.name,
             startDate = concert.startDate,
             endDate = concert.endDate,
-            views = concert.views,
-            likes = concert.likes,
         )
     }
 }
