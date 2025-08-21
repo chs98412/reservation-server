@@ -1,16 +1,10 @@
 package kr.hhplus.be.server.application.concert
 
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import kr.hhplus.be.server.domain.concert.Concert
 import kr.hhplus.be.server.domain.concert.ConcertRepository
-import kr.hhplus.be.server.domain.concert.Genre
+import org.redisson.api.RScoredSortedSet
 import org.redisson.api.RedissonClient
-import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
-import java.time.Duration
 import java.time.LocalDate
 
 data class TopRankedConcertResponse(
@@ -43,20 +37,29 @@ class GetRankTopConcertsService(
     private val concertRepository: ConcertRepository,
     private val redissonClient: RedissonClient,
 ) {
-    private val objectMapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    fun execute(limit: Int = 30): List<TopRankedConcertResponse> {
+        val z: RScoredSortedSet<String> = redissonClient.getScoredSortedSet("top-sell")
+        var entries = z.entryRangeReversed(0, limit - 1)
 
-    fun execute(genre: Genre): List<TopRankedConcertResponse> {
-        val bucket = redissonClient.getBucket<String>("topRankedConcerts:${genre.name}")
-        bucket.get()?.let {
-            return objectMapper.readValue<List<TopRankedConcertResponse>>(it)
-        } ?: let {
-            return concertRepository.findTopByGenre(genre, PageRequest.of(0, 30))
-                .map(TopRankedConcertResponse::from)
-                .also {
-                    bucket.set(objectMapper.writeValueAsString(it), Duration.ofMinutes(5))
-                }
+        if (entries.isEmpty()) {
+            rebuildGenreCache(z)
+            entries = z.entryRangeReversed(0, limit - 1)
+            if (entries.isEmpty()) return emptyList()
+        }
+
+        val ids = entries.map { it.value.toLong() }
+        val map = concertRepository.findAllById(ids).associateBy { it.id }
+        return ids.mapNotNull(map::get).map(TopRankedConcertResponse::from)
+    }
+
+    private fun rebuildGenreCache(z: RScoredSortedSet<String>) {
+        val rows = concertRepository.findTopSellConcerts()
+        if (rows.isEmpty()) return
+
+        z.clear()
+        rows.forEach { r ->
+            val score = r.score()
+            if (score > 0.0) z.add(score, r.concertId.toString())
         }
     }
 }
