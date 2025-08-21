@@ -16,11 +16,8 @@ class TopSellRankRebuilder(
         if (rows.isEmpty()) return
 
         concertRankCacheRepository.clear()
-        rows.forEach { r ->
-            val score = r.score()
-            if (score > 0.0) {
-                concertRankCacheRepository.add(r.concertId, score)
-            }
+        rows.forEach {
+            concertRankCacheRepository.add(it.concertId, it.score())
         }
     }
 }
