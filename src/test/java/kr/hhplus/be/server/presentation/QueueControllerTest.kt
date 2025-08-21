@@ -8,7 +8,6 @@ import com.epages.restdocs.apispec.ResourceSnippetParameters
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.justRun
 import io.mockk.mockk
 import kr.hhplus.be.server.application.queue.CreateTokenUseCase
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.redisson.api.RLock
-import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.restdocs.RestDocumentationContextProvider
@@ -36,7 +34,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
-import java.util.concurrent.TimeUnit
 
 
 @ExtendWith(RestDocumentationExtension::class)
@@ -54,9 +51,6 @@ class QueueControllerTest {
     @MockkBean(relaxed = true)
     lateinit var getStatusUseCase: GetStatusUseCase
 
-    @MockkBean(relaxed = true)
-    lateinit var redissonClient: RedissonClient
-
     val rlock = mockk<RLock>(relaxed = true)
 
     @BeforeEach
@@ -68,11 +62,6 @@ class QueueControllerTest {
                 MockMvcRestDocumentation.documentationConfiguration(restDocumentation)
             )
             .build()
-        every { redissonClient.getLock(any()) } returns rlock
-        every { redissonClient.getFairLock(any()) } returns rlock
-        every { rlock.tryLock(any<Long>(), any<Long>(), any<TimeUnit>()) } returns true
-        every { rlock.isHeldByCurrentThread } returns false
-        justRun { rlock.unlock() }
     }
 
     @Test

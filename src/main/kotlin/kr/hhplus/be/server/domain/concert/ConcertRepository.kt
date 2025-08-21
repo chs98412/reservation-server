@@ -1,24 +1,27 @@
 package kr.hhplus.be.server.domain.concert
 
-import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 interface ConcertRepository : JpaRepository<Concert, Long> {
     @Query(
         """
-    select c
-    from Concert c
-    where c.genre = :genre
-    order by (c.views+(c.likes*30))  
-        * EXP(-ABS(DATEDIFF(c.startDate, CURDATE())) / 7) DESC,c.id
-    """
+        select c.id as concertId,
+               c.startDate as startDate,
+               count(r) as capacity,
+               sum(case when r.status = :paid then 1 else 0 end) as sold
+        from Concert c
+        join Reservation r on r.concertId = c.id
+        where r.date >= :since
+        group by c.id, c.startDate
+        """
     )
-    fun findTopByGenre(
-        @Param("genre") genre: Genre,
-        pageable: Pageable
-    ): List<Concert>
+    fun findTopSellConcerts(
+        @Param("paid") paid: Status = Status.PAID,
+        @Param("since") since: LocalDate = LocalDate.now()
+    ): List<TopSellConcert>
 }
