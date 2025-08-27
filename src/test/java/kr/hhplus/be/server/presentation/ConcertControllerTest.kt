@@ -63,6 +63,9 @@ class ConcertControllerTest {
     lateinit var reserveSeatUseCase: ReserveSeatUseCase
 
     @MockkBean(relaxed = true)
+    lateinit var getRankTopConcertsService: GetRankTopConcertsService
+
+    @MockkBean(relaxed = true)
     lateinit var redissonClient: RedissonClient
 
     val rlock = mockk<RLock>(relaxed = true)
