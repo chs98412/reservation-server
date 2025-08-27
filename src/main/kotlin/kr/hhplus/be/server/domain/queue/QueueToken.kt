@@ -16,7 +16,7 @@ class QueueToken(
         )
 
         const val QUEUE_ENTRANCE_LIMIT = 30L
-        const val EXPIRE_THRESHOLD = 30L
+        const val EXPIRE_THRESHOLD = 30000L
         const val SCHEDULE_INTERVAL = 10000L
     }
 }
