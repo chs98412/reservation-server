@@ -16,3 +16,8 @@ class NotFoundConcertException(
 class AlreadyReservedSeatException(
     override val message: String = "이미 예약된 좌석입니다."
 ) : ConcertException(message)
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+class NotFoundReservationException(
+    override val message: String = "존재하지 않는 예약 정보입니다.",
+) : ConcertException(message)
