@@ -36,4 +36,9 @@ class QueueCacheRepositoryImpl(
         val waiting = redisson.getScoredSortedSet<String>("waiting:$concertId")
         return waiting.pollFirst()
     }
+
+    override fun removeFromActive(concertId: Long, accountId: String) {
+        val key = "active:$concertId:$accountId"
+        redisson.getBucket<String>(key).delete()
+    }
 }

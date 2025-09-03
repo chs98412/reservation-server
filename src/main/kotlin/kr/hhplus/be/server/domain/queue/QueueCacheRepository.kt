@@ -7,4 +7,5 @@ interface QueueCacheRepository {
     fun addActive(concertId: Long, accountId: String, ttlMinutes: Long)
     fun existsInActive(concertId: Long, accountId: String): Boolean
     fun pollFirstWaiting(concertId: Long): String?
+    fun removeFromActive(concertId: Long, accountId: String)
 }
