@@ -5,19 +5,13 @@ interface GetStatusUseCase {
 }
 
 data class QueueStatusResponse(
-    val queueNumber: Long,
     val isAllowedToEnter: Boolean,
-    val estimateWaitTime: Long,
 ) {
     companion object {
         fun from(
-            queueNumber: Long,
             isAllowedToEnter: Boolean,
-            estimateWaitTime: Long
         ) = QueueStatusResponse(
-            queueNumber = queueNumber,
             isAllowedToEnter = isAllowedToEnter,
-            estimateWaitTime = estimateWaitTime
         )
     }
 }

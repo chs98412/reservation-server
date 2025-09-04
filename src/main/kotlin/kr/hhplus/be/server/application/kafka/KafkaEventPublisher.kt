@@ -14,4 +14,12 @@ class KafkaEventPublisher(
             event,
         )
     }
+
+    fun publish(topic: String, partitionKey: String, event: Any) {
+        kafkaTemplate.send(
+            topic,
+            partitionKey,
+            event,
+        )
+    }
 }

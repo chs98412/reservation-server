@@ -82,7 +82,7 @@ class ConcertControllerTest {
         queueStateRepository.deleteAll()
         reservationRepository.deleteAll()
         concertRepository.deleteAll()
-        coEvery { getStatusUseCase.execute(any()) } returns QueueStatusResponse(1L, true, 0L)
+        coEvery { getStatusUseCase.execute(any()) } returns QueueStatusResponse(true)
     }
 
 
