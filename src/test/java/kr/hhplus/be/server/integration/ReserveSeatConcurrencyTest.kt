@@ -53,7 +53,7 @@ class ReserveSeatConcurrencyTest {
     @BeforeEach
     fun setUp() {
         reservationRepository.deleteAll()
-        coEvery { getStatusUseCase.execute(any()) } returns QueueStatusResponse(1L, true, 0L)
+        coEvery { getStatusUseCase.execute(any()) } returns QueueStatusResponse(true)
     }
 
     @Test

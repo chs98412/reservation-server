@@ -69,6 +69,7 @@ dependencies {
     testImplementation("com.epages:restdocs-api-spec-mockmvc:0.19.4")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.springframework.kafka:spring-kafka")
 
 
     testImplementation("io.kotest:kotest-runner-junit5:5.9.0")

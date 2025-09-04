@@ -7,17 +7,18 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import kr.hhplus.be.server.application.kafka.KafkaEventPublisher
 import kr.hhplus.be.server.common.exception.AlreadyReservedSeatException
 import kr.hhplus.be.server.common.exception.NotFoundConcertException
+import kr.hhplus.be.server.domain.KafkaTopic
 import kr.hhplus.be.server.domain.concert.Reservation
 import kr.hhplus.be.server.domain.concert.ReservationRepository
 import kr.hhplus.be.server.eventListener.concert.model.ReservationEvent
-import org.springframework.context.ApplicationEventPublisher
 
 class ReserveSeatServiceTest : BehaviorSpec({
     val reservationRepository = mockk<ReservationRepository>()
-    val applicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
-    val reserveSeatService = ReserveSeatService(reservationRepository, applicationEventPublisher)
+    val kafkaEventPublisher = mockk<KafkaEventPublisher>(relaxed = true)
+    val reserveSeatService = ReserveSeatService(reservationRepository, kafkaEventPublisher)
 
     val command = SeatReservationCommand(
         concertId = 1L,
@@ -75,7 +76,7 @@ class ReserveSeatServiceTest : BehaviorSpec({
             }
             Then("ReservationEvent가 발행된다") {
                 val slot = slot<ReservationEvent>()
-                verify { applicationEventPublisher.publishEvent(capture(slot)) }
+                verify { kafkaEventPublisher.publish(KafkaTopic.RESERVE_COMPLETE, capture(slot)) }
                 slot.captured.reservationId shouldBe 1
             }
         }

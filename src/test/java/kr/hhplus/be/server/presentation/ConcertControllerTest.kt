@@ -88,7 +88,7 @@ class ConcertControllerTest {
 
     @Test
     fun `예약 가능 날짜 조회 API`() {
-        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(isAllowedToEnter = true)
         every { getStatusUseCase.execute(any()) } returns queueSummary
 
         val summary = ReservationAvailableDatesResponse(availableDates = listOf(LocalDate.now()))
@@ -129,7 +129,7 @@ class ConcertControllerTest {
 
     @Test
     fun `예약 가능 좌석 조회 API`() {
-        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(isAllowedToEnter = true)
         every { getStatusUseCase.execute(any()) } returns queueSummary
 
         val summary = AvailableConcertReservationFetchResponse(availableReservationIdList = listOf(1, 2, 3))
@@ -171,7 +171,7 @@ class ConcertControllerTest {
 
     @Test
     fun `좌석 예약 요청 API`() {
-        val queueSummary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val queueSummary = QueueStatusResponse(isAllowedToEnter = true)
         every { getStatusUseCase.execute(any()) } returns queueSummary
         val requestBody = SeatReservationRequest(concertId = 1, seatNo = 1)
         justRun { reserveSeatUseCase.execute(any()) }
