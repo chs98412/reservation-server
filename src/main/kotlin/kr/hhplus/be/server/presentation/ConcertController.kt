@@ -3,6 +3,7 @@ package kr.hhplus.be.server.presentation
 import kr.hhplus.be.server.application.concert.*
 import kr.hhplus.be.server.application.queue.GetStatusUseCase
 import kr.hhplus.be.server.common.exception.InvalidQueueTokenException
+import kr.hhplus.be.server.infrastructure.acquireLockOrThrow
 import kr.hhplus.be.server.presentation.model.SeatReservationRequest
 import org.redisson.api.RedissonClient
 import org.springframework.http.ResponseEntity
@@ -54,18 +55,10 @@ class ConcertController(
         @RequestHeader("X-QUEUE-TOKEN-ID") queueTokenId: String,
         @RequestBody request: SeatReservationRequest,
     ): ResponseEntity<Void> {
-//        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
-        try {
-
+        if (!getStatusUseCase.execute(queueTokenId).isAllowedToEnter) throw InvalidQueueTokenException()
+        redisson.acquireLockOrThrow(key = "reserve:${request.concertId}:${request.seatNo}") {
             reserveSeatUseCase.execute(request.toCommand(accountId))
-        } catch (e: Exception) {
-            println("it = ${e}")
-            println("e.message = ${e.message}")
         }
-
-//        redisson.acquireLockOrThrow(key = "reserve:${request.concertId}:${request.seatNo}") {
-//            reserveSeatUseCase.execute(request.toCommand(accountId))
-//        }
         return ResponseEntity.noContent().build()
     }
 
