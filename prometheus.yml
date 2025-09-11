@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  # Spring Boot (Actuator Prometheus endpoint)
+  - job_name: 'spring-boot'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:8081' ]
+
+  # MySQL Exporter
+  - job_name: 'mysql'
+    static_configs:
+      - targets: [ 'mysqld-exporter:9104' ]
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: [ 'redis-exporter:9121' ]

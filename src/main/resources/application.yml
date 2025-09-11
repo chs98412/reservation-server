@@ -1,5 +1,6 @@
 server:
   port: 8081
+
 spring:
   application:
     name: hhplus
@@ -43,5 +44,20 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# --- 모니터링 & 트레이싱 ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+
+logging:
+  pattern:
+    level: "%5p [traceId=%X{traceId:-}, spanId=%X{spanId:-}]"
 ---
 spring.config.activate.on-profile: local, test

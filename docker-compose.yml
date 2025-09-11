@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mysql:
     image: mysql:8.0
@@ -11,9 +9,17 @@ services:
       MYSQL_USER: application
       MYSQL_PASSWORD: application
       MYSQL_DATABASE: hhplus
-
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysqld-exporter
+    environment:
+      DATA_SOURCE_NAME: application:application@(mysql:3306)/hhplus
+    ports:
+      - "9104:9104"
+    depends_on:
+      - mysql
   redis:
-    image: redis:7.2-alpine
+    image: redis:7.2
     container_name: redis
     ports:
       - "6379:6379"
@@ -34,17 +40,80 @@ services:
       KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
       KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
+  # --- 모니터링 스택 추가 ---
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
     ports:
-      - "8080:8080"
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
     environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: ""
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
-      - kafka
+      - prometheus
+      - tempo
+      - loki
+
+  tempo:
+    image: grafana/tempo:2.5.0
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"     # Tempo HTTP
+      - "55680:4317"
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    command: [ "-config.file=/etc/loki/local-config.yaml" ]
+    ports:
+      - "3100:3100"
+
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: redis-exporter
+    command:
+      - '--redis.addr=redis://redis:6379'
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+
+#  my-spring-app:
+#    build: .
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - mysql
+#      - redis
+#      - kafka
+#      - prometheus
+#      - tempo
+#      - loki
+#    environment:
+#      SPRING_PROFILES_ACTIVE: local
+#      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hhplus?characterEncoding=UTF-8&serverTimezone=UTC
+#      SPRING_DATASOURCE_USERNAME: application
+#      SPRING_DATASOURCE_PASSWORD: application
+#      SPRING_REDIS_HOST: redis
+#      SPRING_REDIS_PORT: 6379
+#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4317
+#      JAVA_TOOL_OPTIONS: >
+#        -javaagent:/app/opentelemetry-javaagent.jar
+#        -Dotel.exporter.otlp.endpoint=http://tempo:4317
+#        -Dotel.exporter.otlp.protocol=grpc
+#        -Dotel.resource.attributes=service.name=hhplus
 
 networks:
   default:
