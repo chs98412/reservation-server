@@ -100,7 +100,8 @@ class QueueControllerTest {
 
     @Test
     fun `대기 상태 조회 API`() {
-        val summary = QueueStatusResponse(queueNumber = 10, isAllowedToEnter = true, estimateWaitTime = 1000)
+        val summary = QueueStatusResponse(isAllowedToEnter = true)
+
         every { getStatusUseCase.execute(any()) } returns summary
 
         mockMvc.perform(
@@ -121,12 +122,8 @@ class QueueControllerTest {
                                 headerWithName("X-QUEUE-TOKEN-ID").description("대기열 토큰 헤더")
                             )
                             .responseFields(
-                                fieldWithPath("queueNumber").type(JsonFieldType.NUMBER).description("대기 번호")
-                                    .attributes(Attributes.key("queueNumber").value(summary.queueNumber)),
                                 fieldWithPath("isAllowedToEnter").type(JsonFieldType.BOOLEAN).description("입장 가능 여부")
                                     .attributes(Attributes.key("isAllowedToEnter").value(summary.isAllowedToEnter)),
-                                fieldWithPath("estimateWaitTime").type(JsonFieldType.NUMBER).description("예상 대기시간")
-                                    .attributes(Attributes.key("estimateWaitTime").value(summary.estimateWaitTime)),
                             )
                             .build()
                     )

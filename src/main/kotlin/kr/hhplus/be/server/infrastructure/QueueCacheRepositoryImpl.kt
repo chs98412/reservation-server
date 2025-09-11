@@ -9,18 +9,6 @@ import java.time.Duration
 class QueueCacheRepositoryImpl(
     private val redisson: RedissonClient
 ) : QueueCacheRepository {
-    override fun addWaiting(concertId: Long, accountId: String, score: Double) {
-        redisson.getScoredSortedSet<String>("waiting:$concertId").add(score, accountId)
-    }
-
-    override fun getRank(concertId: Long, accountId: String): Int? {
-        return redisson.getScoredSortedSet<String>("waiting:$concertId").rank(accountId)?.plus(1)
-    }
-
-    override fun existsInWaiting(concertId: Long, accountId: String): Boolean {
-        return redisson.getScoredSortedSet<String>("waiting:$concertId").contains(accountId)
-    }
-
     override fun addActive(concertId: Long, accountId: String, ttlMinutes: Long) {
         val key = "active:$concertId:$accountId"
         val bucket = redisson.getBucket<String>(key)
@@ -32,8 +20,8 @@ class QueueCacheRepositoryImpl(
         return redisson.getBucket<String>(key).isExists
     }
 
-    override fun pollFirstWaiting(concertId: Long): String? {
-        val waiting = redisson.getScoredSortedSet<String>("waiting:$concertId")
-        return waiting.pollFirst()
+    override fun removeFromActive(concertId: Long, accountId: String) {
+        val key = "active:$concertId:$accountId"
+        redisson.getBucket<String>(key).delete()
     }
 }

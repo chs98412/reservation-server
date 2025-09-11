@@ -5,8 +5,6 @@ import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
-import io.kotest.matchers.longs.shouldBeGreaterThanOrEqual
-import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import kr.hhplus.be.server.common.exception.AccountNotFoundInQueueException
@@ -38,9 +36,7 @@ class GetStatusServiceTest : BehaviorSpec({
             val result = getStatusService.execute(tokenId)
 
             Then("입장 가능 상태가 반환된다") {
-                result.queueNumber shouldBe queueNumber
                 result.isAllowedToEnter.shouldBeTrue()
-                result.estimateWaitTime shouldBe 0L
             }
         }
     }
@@ -55,15 +51,12 @@ class GetStatusServiceTest : BehaviorSpec({
 
         every { queueTokenSigner.decode(tokenId) } returns decodedToken
         every { queueCacheRepository.existsInActive(any(), any()) } returns false
-        every { queueCacheRepository.getRank(any(), any()) } returns 4
 
         When("getStatus를 호출하면") {
             val result = getStatusService.execute(tokenId)
 
             Then("입장 불가 상태와 예상 대기 시간이 계산된다") {
-                result.queueNumber shouldBe 5L
                 result.isAllowedToEnter.shouldBeFalse()
-                result.estimateWaitTime shouldBeGreaterThanOrEqual 0L
             }
         }
     }
@@ -78,7 +71,6 @@ class GetStatusServiceTest : BehaviorSpec({
 
         every { queueTokenSigner.decode(tokenId) } returns decodedToken
         every { queueCacheRepository.existsInActive(any(), any()) } returns false
-        every { queueCacheRepository.getRank(any(), any()) } returns null
 
         When("getStatus를 호출하면") {
             Then("AccountNotFoundInQueueException 이 발생한다") {

@@ -1,64 +1,36 @@
 package kr.hhplus.be.server.application.queue
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.BehaviorSpec
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kr.hhplus.be.server.domain.concert.Concert
-import kr.hhplus.be.server.domain.concert.ConcertRepository
 import kr.hhplus.be.server.domain.queue.QueueCacheRepository
-import java.time.LocalDate
+import kr.hhplus.be.server.eventListener.concert.QueueEventListener
+import kr.hhplus.be.server.eventListener.concert.model.QueueJoinEvent
 
 class QueueSchedulerTest : BehaviorSpec({
     isolationMode = IsolationMode.InstancePerTest
+    val objectMapper = jacksonObjectMapper()
 
-    val concertRepository = mockk<ConcertRepository>(relaxed = true)
     val queueCacheRepository = mockk<QueueCacheRepository>(relaxed = true)
 
-    lateinit var queueScheduler: QueueScheduler
+    lateinit var queueEventListener: QueueEventListener
 
     beforeTest {
-        queueScheduler = QueueScheduler(concertRepository, queueCacheRepository)
+        queueEventListener = QueueEventListener(queueCacheRepository)
     }
 
     Given("대기열에 유저가 있는 콘서트가 있을 때") {
-        val concert = Concert(
-            id = 1L,
-            name = "테스트콘서트",
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now(),
-        )
-
-        every { concertRepository.findAll() } returns listOf(concert)
-        every { queueCacheRepository.pollFirstWaiting(concert.id) } returnsMany listOf("user1", "user2", null)
+        val event1 = objectMapper.writeValueAsString(QueueJoinEvent(1, "accountId1"))
+        val event2 = objectMapper.writeValueAsString(QueueJoinEvent(2, "accountId2"))
+        val event3 = objectMapper.writeValueAsString(QueueJoinEvent(3, "accountId3"))
 
         When("increaseEntranceNumber를 호출하면") {
-            queueScheduler.increaseEntranceNumber()
+            queueEventListener.increaseEntranceNumber(listOf(event1, event2, event3))
 
-            Then("QUEUE_ENTRANCE_LIMIT 만큼 poll과 addActive가 호출된다") {
-                verify(exactly = 2) { queueCacheRepository.addActive(any(), any(), any()) }
-                verify(atLeast = 1) { queueCacheRepository.pollFirstWaiting(any()) }
-            }
-        }
-    }
-
-    Given("대기열이 비어있는 경우") {
-        val concert = Concert(
-            id = 2L,
-            name = "비어있는콘서트",
-            startDate = LocalDate.now(),
-            endDate = LocalDate.now(),
-        )
-
-        every { concertRepository.findAll() } returns listOf(concert)
-        every { queueCacheRepository.pollFirstWaiting(concert.id) } returns null
-
-        When("increaseEntranceNumber를 호출하면") {
-            queueScheduler.increaseEntranceNumber()
-
-            Then("addActive는 호출되지 않는다") {
-                verify(exactly = 0) { queueCacheRepository.addActive(any(), any(), any()) }
+            Then("addActive가 호출된다") {
+                verify { queueCacheRepository.addActive(any(), any(), any()) }
             }
         }
     }
